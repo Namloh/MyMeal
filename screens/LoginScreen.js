@@ -4,7 +4,7 @@ import { auth } from '../firebase'
 import { useNavigation } from '@react-navigation/native'
 
 const LoginScreen = () => {
-
+  const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
@@ -24,7 +24,20 @@ const LoginScreen = () => {
     auth.createUserWithEmailAndPassword(email,password)
     .then(userCredentials => 
       {
-        const user = userCredentials.user; console.log("Registered in with ", user.email)
+        const user = userCredentials.user; 
+        console.log("Registered in with ", user.email)
+
+        user.updateProfile({
+          displayName: name
+        }).then(() => {
+          // Name parameter successfully set
+          console.log("Name set to", name);
+        }).catch(error => {
+          // Error occurred while setting the name parameter
+          console.error("Error setting name:", error.message);
+        });
+
+        
       })
     .catch(error => alert(error.message))
   }
@@ -45,10 +58,16 @@ const LoginScreen = () => {
     <KeyboardAvoidingView style={styles.container} behavior='padding' keyboardVerticalOffset={-350}>
       <View style={styles.inputContainer}>
         <TextInput
-         placeholder='Email'
-         value={email }
-         onChangeText={text => setEmail(text)}
-         style={styles.input}/>
+          placeholder='Name'
+          value={name }
+          onChangeText={text => setName(text)}
+          style={styles.input}/>
+          
+        <TextInput
+          placeholder='Email'
+          value={email }
+          onChangeText={text => setEmail(text)}
+          style={styles.input}/>
 
         <TextInput
                 placeholder='Password'

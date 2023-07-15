@@ -3,29 +3,42 @@ import React, {useState, useEffect} from 'react'
 import { auth } from '../firebase'
 import { useNavigation } from '@react-navigation/native'
 import { onAuthStateChanged } from "firebase/auth";
-
+import firestore from '@react-native-firebase/firestore';
     
 const SettingsScreen = () => {
 
+  const [userData, setUserData] = useState(null);
+  const getUser = async() => {
+    const currentUser = await firestore()
+    .collection('users')
+    .doc(user.uid)
+    .get()
+    .then((documentSnapshot) => {
+      if( documentSnapshot.exists ) {
+        console.log('User Data', documentSnapshot.data());
+        setUserData(documentSnapshot.data());
+      }
+    })
+  }
 
-    const navigation = useNavigation()
+  const navigation = useNavigation()
 
-    const handleSignOut = () => {
-        auth.signOut()
-            .then(() => {
-            navigation.replace("Login");
-            console.log("Signed out");
-            })
-            .catch(error => alert(error.message));
-        };
-    onAuthStateChanged(auth, (user) => {
-    if (user) {
-        const uid = user.uid;
-    } else {
-        // User is signed out
-    }
-    });
-          
+  const handleSignOut = () => {
+      auth.signOut()
+          .then(() => {
+          navigation.replace("Login");
+          console.log("Signed out");
+          })
+          .catch(error => alert(error.message));
+      };
+  onAuthStateChanged(auth, (user) => {
+  if (user) {
+      const uid = user.uid;
+  } else {
+      // User is signed out
+  }
+  });
+        
 
   return (
     <>
@@ -34,9 +47,8 @@ const SettingsScreen = () => {
         <View style={styles.container}>
             <Text style={styles.emailText}>Email: {auth.currentUser?.email}</Text>
 
-            <Text style={styles.emailText}>Email: {auth.currentUser?.email}</Text>
-            <Text style={styles.emailText}>Email: {auth.currentUser?.email}</Text>
-            <Text style={styles.emailText}>Email: {auth.currentUser?.email}</Text>
+            <Text style={styles.emailText}>Name: {auth.currentUser?.displayName}</Text>
+      
 
           
         </View>
