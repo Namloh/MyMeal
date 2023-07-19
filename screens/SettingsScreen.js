@@ -1,13 +1,17 @@
-import { StyleSheet, Text, View, TouchableOpacity, Appearance, Switch } from 'react-native'
-import React, {useState, useEffect} from 'react'
+import { StyleSheet, Text, View, TouchableOpacity, Appearance } from 'react-native'
+import React, {useState, useEffect, useContext} from 'react'
 import { auth, db } from '../firebase'
 import { useNavigation } from '@react-navigation/native'
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, doc, getDoc } from 'firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native';
+import { DarkModeContext } from '../DarkModeProvider/DarkModeProvider';
+import { Switch } from 'native-base'
+
 
 const SettingsScreen = () => {
 
+  const { darkMode, toggleDarkMode, theme } = useContext(DarkModeContext);
   const [userData, setUserData] = useState(null);
   const navigation = useNavigation()
 
@@ -46,32 +50,40 @@ const SettingsScreen = () => {
     }
   };
 
+
   useFocusEffect(
     React.useCallback(() => {
       fetchUserData();
     }, [])
     );
+
+    
   return (
-    <>
-     <Text style={styles.header}>My Account</Text>
-   
+    <View style={[styles.wrap, {backgroundColor: theme.background}]}>
+     <Text style={[styles.header, {color: theme.primaryText }]}>My Account</Text>
+
         <View style={styles.container}>
 
-            <Text style={styles.emailText}>Name: {userData?.name}</Text>
-            <Text style={styles.emailText}>Weight: {userData?.weight} Kg</Text>
-            <Text style={styles.emailText}>Email: {auth.currentUser?.email}</Text>
+            <Text style={[styles.emailText, {color: theme.primaryText }]}>Name: {userData?.name}</Text>
+            <Text style={[styles.emailText, {color: theme.primaryText }]}>Weight: {userData?.weight} Kg</Text>
+            <Text style={[styles.emailText, {color: theme.primaryText }]}>Email: {auth.currentUser?.email}</Text>
      
       
 
-          
+            <View style={styles.switchContainer}>
+            <Text style={[styles.emailText, {color: theme.primaryText }]}>
+              {darkMode ? 'Light Mode' : 'Dark Mode'}
+            </Text>
+            <Switch onTrackColor={"deepskyblue"} value={darkMode} onToggle={toggleDarkMode} />
+          </View>
         </View>
         <TouchableOpacity
             onPress={handleSignOut}
             style={styles.button}
             >
-                <Text style={styles.buttonText}>Sign Out</Text>
+                <Text  style={[styles.buttonText, {color: theme.btnText }]}>Sign Out</Text>
             </TouchableOpacity>
-    </>
+    </View>
   )
 }
 
@@ -79,6 +91,10 @@ export default SettingsScreen
 
 
 const styles = StyleSheet.create({
+    wrap:{
+      minHeight: "100%",
+ 
+    },
     container:{
         flex: 1,
         justifyContent: "flex-start",

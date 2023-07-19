@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View, Appearance } from 'react-native'
-import React, {useState} from 'react'
+import React, {useState, useContext} from 'react'
 import { auth } from '../firebase'
 import { useNavigation } from '@react-navigation/native'
 import { NavigationContainer } from '@react-navigation/native';
@@ -8,17 +8,18 @@ import SettingsScreen from './SettingsScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MyMealScreen from './MyMealScreen';
 import ProfileScreen from './ProfileScreen';
+import { DarkModeContext } from '../DarkModeProvider/DarkModeProvider';
 
 const HomeScreen = () => {
- 
+  const { theme } = useContext(DarkModeContext);
   const Tab = createBottomTabNavigator();
+console.log(theme)
 
   return (
 
 
     <Tab.Navigator
-    screenOptions={({ route }) => ({
-      
+    screenOptions={({ route }) => ({     
       tabBarIcon: ({ focused, color, size }) => {
         let iconName;
 
@@ -37,25 +38,29 @@ const HomeScreen = () => {
         
         return <Ionicons name={iconName} size={size} color={color} />;
       },
-      
-      
+      headerStyle: {
+        backgroundColor: theme.background, 
+        
+      },
+      headerTintColor: theme.primaryText, 
       tabBarLabelStyle: {
         fontSize: 13,
 
       },
       tabBarActiveTintColor: 'deepskyblue',
-      tabBarInactiveTintColor: 'black',
+      tabBarInactiveTintColor: theme.primaryText,
       tabBarStyle: {
         height: 60,
         paddingHorizontal: 10,
         paddingTop: 0,
-        backgroundColor: 'white',
+        backgroundColor: theme.background,
         position: 'absolute',
     },
+    
     })}
   >
  
-     <Tab.Screen name="MyMeal" component={MyMealScreen} />
+     <Tab.Screen name="MyMeal"  component={MyMealScreen} />
      <Tab.Screen name="Profile" component={ProfileScreen} />
      <Tab.Screen name="Settings" component={SettingsScreen} />
   </Tab.Navigator>

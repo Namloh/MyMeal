@@ -1,11 +1,12 @@
 import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, {useState} from 'react'
+import React, {useState, useContext} from 'react'
 import { collection, doc, setDoc } from 'firebase/firestore';
 import { auth } from '../firebase'
 import {db} from "../firebase"
+import { DarkModeContext } from '../DarkModeProvider/DarkModeProvider';
 
 const ProfileScreen = () => {
-
+    const { theme } = useContext(DarkModeContext);
     const [weightValue, setWeightValue] = useState('');
     const [name, setName] = useState('');
 
@@ -21,8 +22,9 @@ const ProfileScreen = () => {
     };
 
   return (
-    <>
-        <Text style={styles.header}>My Profile</Text>
+    <View style={{minHeight: "100%", backgroundColor: theme.background}}>
+       
+        <Text style={[styles.header, {color: theme.primaryText}]}>My Profile</Text>
         <View style={styles.container}>
      
           
@@ -49,7 +51,7 @@ const ProfileScreen = () => {
             <Text style={styles.buttonText}>Save Name</Text>
             </TouchableOpacity>
         </View>
-    </>
+    </View>
   )
 }
 
