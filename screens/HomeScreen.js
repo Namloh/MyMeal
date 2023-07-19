@@ -13,7 +13,7 @@ import { DarkModeContext } from '../DarkModeProvider/DarkModeProvider';
 const HomeScreen = () => {
   const { theme } = useContext(DarkModeContext);
   const Tab = createBottomTabNavigator();
-console.log(theme)
+
 
   return (
 
@@ -38,11 +38,7 @@ console.log(theme)
         
         return <Ionicons name={iconName} size={size} color={color} />;
       },
-      headerStyle: {
-        backgroundColor: theme.background, 
-        
-      },
-      headerTintColor: theme.primaryText, 
+      headerShown: false,
       tabBarLabelStyle: {
         fontSize: 13,
 

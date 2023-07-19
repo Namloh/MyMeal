@@ -10,6 +10,8 @@ const MyMealScreen = () => {
        
        <Text style={[styles.header, {color: theme.primaryText}]}>My Meal</Text>
         <View style={styles.container}>
+
+
         </View>
     </View>
   )
