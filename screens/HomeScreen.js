@@ -7,20 +7,16 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SettingsScreen from './SettingsScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MyMealScreen from './MyMealScreen';
+import ProfileScreen from './ProfileScreen';
 
 const HomeScreen = () => {
-  const [theme, setTheme] = useState(Appearance.getColorScheme())
-
-  Appearance.addChangeListener((scheme) => {
-    setTheme(scheme.colorScheme)
-  })
-  
+ 
   const Tab = createBottomTabNavigator();
 
   return (
 
 
-    <Tab.Navigator sceneContainerStyle={theme == "light"?{backgroundColor: 'transparent'}:{backgroundColor: 'black'}}
+    <Tab.Navigator
     screenOptions={({ route }) => ({
       
       tabBarIcon: ({ focused, color, size }) => {
@@ -30,7 +26,11 @@ const HomeScreen = () => {
           iconName = focused
             ? 'ios-home'
             : 'ios-home-outline';
-        } else if (route.name === 'Settings') {
+        }
+        else if(route.name === 'Profile'){
+          iconName = focused ? 'ios-person' : 'person-outline';
+        } 
+        else if (route.name === 'Settings') {
           iconName = focused ? 'ios-settings' : 'settings-outline';
         }
         size = 25
@@ -56,6 +56,7 @@ const HomeScreen = () => {
   >
  
      <Tab.Screen name="MyMeal" component={MyMealScreen} />
+     <Tab.Screen name="Profile" component={ProfileScreen} />
      <Tab.Screen name="Settings" component={SettingsScreen} />
   </Tab.Navigator>
 
