@@ -1,12 +1,11 @@
-import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, {useState, useContext} from 'react'
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View, StatusBar } from 'react-native'
+import React, {useState, useContext, useEffect} from 'react'
 import { collection, doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth } from '../firebase'
 import {db} from "../firebase"
 import { DarkModeContext } from '../DarkModeProvider/DarkModeProvider';
 import { useFocusEffect } from '@react-navigation/native';
-import { AuthErrorCodes } from 'firebase/auth';
-import { Center } from 'native-base';
+
 
 const ProfileScreen = () => {
   const { theme } = useContext(DarkModeContext);
@@ -16,6 +15,8 @@ const ProfileScreen = () => {
     value: '',
   });
 
+  const statusBarHeight = StatusBar.currentHeight || 0;
+ 
   const fetchUserData = async () => {
     try {
       const userId = auth.currentUser.uid;
@@ -34,8 +35,14 @@ const ProfileScreen = () => {
     }
   };
 
+  const resetEditingData = () => {
+    setEditingData({ field: '', value: '' });
+  };
+
+
   useFocusEffect(React.useCallback(() => {
     fetchUserData();
+     resetEditingData();
   }, []));
 
   const openEditor = (field, value) => {
@@ -64,7 +71,13 @@ const ProfileScreen = () => {
   };
 
   return (
-    <View style={{ minHeight: '100%', backgroundColor: theme.background }}>
+    <KeyboardAvoidingView
+    style={{ flex: 1, backgroundColor: theme.background }}
+    behavior={'padding'}
+
+  
+  >
+    <View style={{ minHeight: '100%', backgroundColor: theme.background , paddingTop: statusBarHeight}}>
     <Text style={[styles.header, { color: theme.primaryText }]}>My Profile</Text>
 
     <View style={styles.container}>
@@ -74,14 +87,14 @@ const ProfileScreen = () => {
           // Show the input popup for weight if editingData.field is 'weight'
           <View style={styles.inputContainer}>
             <TextInput
-              style={[styles.input, { color: theme.primaryText }]}
+              style={[styles.input, { color: 'black'  }]}
               placeholder={`Enter weight`}
               value={editingData.value}
               onChangeText={text => setEditingData({ ...editingData, value: text })}
               keyboardType="numeric"
             />
-            <TouchableOpacity onPress={saveData} style={styles.button}>
-              <Text style={[styles.buttonText, { color: theme.btnText }]}>Save</Text>
+            <TouchableOpacity onPress={saveData} style={styles.editButton}>
+              <Text style={[styles.editButtonText, { color: theme.btnText }]}>Save</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -103,13 +116,13 @@ const ProfileScreen = () => {
           // Show the input popup for name if editingData.field is 'name'
           <View style={styles.inputContainer}>
             <TextInput
-              style={[styles.input, { color: theme.primaryText }]}
+              style={[styles.input, { color: 'black' }]}
               placeholder={`Enter name`}
               value={editingData.value}
               onChangeText={text => setEditingData({ ...editingData, value: text })}
             />
-            <TouchableOpacity onPress={saveData} style={styles.button}>
-              <Text style={[styles.buttonText, { color: theme.btnText }]}>Save</Text>
+            <TouchableOpacity onPress={saveData} style={styles.editButton}>
+              <Text style={[styles.editButtonText, { color: theme.btnText }]}>Save</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -128,21 +141,24 @@ const ProfileScreen = () => {
 
     </View>
   </View>
+  </KeyboardAvoidingView>
   );
 };
 
 export default ProfileScreen
 
 const styles = StyleSheet.create({
+  
   itemContainer:{
-    width: '80%',
+    width: '90%',
+    height: '60%',
+    minHeight: 50,
   } ,
   itemC: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
-    alignItems: 'center'
+    alignItems: 'center',
   } ,
   inputContainer:{
     flex: 1,
@@ -151,36 +167,45 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 20,
-  
+    
   },
   editButton: {
     padding: 10,
     backgroundColor: 'deepskyblue',
     borderRadius: 5,
-    width: '100px',
+    width: 100,
+    height: 40,
     alignItems: 'center'
+
   },
   editButtonText: {
     color: 'white',
     fontWeight: 'bold',
     fontSize: 15,
   },
-    container:{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-       
-    },
+  container:{
+    flex: 1,
+    justifyContent: "flex-start",
+    marginLeft: 30,
+    marginTop: 30,
+    maxHeight: "10%",
+},
     inputContainer: {
-      width: '80%'
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center'
     },
     input: {
       backgroundColor: 'white',
       paddingHorizontal: 15,
       paddingVertical: 10,
       borderRadius: 10,
+      borderColor: 'deepskyblue',
+      borderWidth: 2,
       marginTop: 5,
-
+      fontSize: 20,
+      maxWidth: 150,
     },
     buttonContainer: {
       width: "60%",
@@ -202,4 +227,5 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         marginTop: 10,
       },
+      
 })

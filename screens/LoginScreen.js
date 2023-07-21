@@ -1,43 +1,53 @@
-import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native'
 import React, {useEffect, useState}  from 'react'
-import { auth } from '../firebase'
+import { auth, GoogleAuthProvider, signInWithRedirect } from '../firebase';
 import { useNavigation } from '@react-navigation/native'
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation()
   
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(user => {
       if(user){
-        navigation.replace("Home")
+        
       }
     })
 
     return unsub
   }, [])
 
-  const handleSignUp = () => {
-    auth.createUserWithEmailAndPassword(email,password)
-    .then(userCredentials => 
-      {
-        const user = userCredentials.user; 
-        console.log("Registered in with ", user.email)
-        
-      })
-    .catch(error => alert(error.message))
-  }
 
+ 
 
+  const handleRegisterPress = () => {
+    navigation.navigate("Register");
+  };
+
+  
   const handleLogIn = () => {
-    auth.signInWithEmailAndPassword(email,password)
-    .then(userCredentials => 
-      {
-        const user = userCredentials.user; console.log("Logged in with ", user.email)
-      })
-    .catch(error => alert(error.message))
+    setIsLoading(true); 
+    Alert.alert(
+      "Logging In",
+      "Please wait while we log you in...",
+      [{ text: "OK", onPress: () => {} }],
+      { cancelable: true }
+    );
+    auth
+    .signInWithEmailAndPassword(email, password)
+    .then((userCredentials) => {
+      const user = userCredentials.user;
+      console.log("Logged in with ", user.email);
+
+      setIsLoading(false); // Set isLoading back to false after the login is successful
+    })
+    .catch((error) => {
+      alert(error.message);
+      setIsLoading(false); // Set isLoading back to false after the login attempt (whether it succeeded or failed)
+    });
+  
   }
 
 
@@ -66,10 +76,17 @@ const LoginScreen = () => {
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleSignUp} style={[styles.button, styles.buttonOutline]}>
+
+        <Text style={styles.newAccText}>Don't have an account?</Text>
+        <TouchableOpacity onPress={handleRegisterPress} style={[styles.button, styles.buttonOutline]}>
           <Text style={styles.btnOutlineText}>Register</Text>
         </TouchableOpacity>
+       
       </View>
+
+
+      
+
     </KeyboardAvoidingView>
   )
 }
@@ -77,6 +94,7 @@ const LoginScreen = () => {
 export default LoginScreen
 
 const styles = StyleSheet.create({
+  
     container:{
         flex: 1,
         justifyContent: 'center',
@@ -116,12 +134,31 @@ const styles = StyleSheet.create({
     },
     buttonText: {
       color: 'white',
-      fontWeight: 700,
+      fontWeight: '700',
       fontSize: 16,
     },
     btnOutlineText: {
       color: 'deepskyblue',
-      fontWeight: 700,
+      fontWeight: '700',
       fontSize: 16,
-    }
-})
+    },
+    newAccText:{
+      marginTop: 20,
+      color: 'deepskyblue',
+      fontSize: 16,
+    },
+    loadingAlert: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      backgroundColor: 'white',
+      padding: 30,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: 'deepskyblue',
+      transform: [{ translateX: -50 }, { translateY: -50 }],
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    
+})  

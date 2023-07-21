@@ -1,20 +1,33 @@
-import { StatusBar } from 'expo-status-bar';
 import React, {useState, useEffect, useContext} from 'react'
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
+import RegisterScreen from './screens/RegisterScreen';
 import { DarkModeProvider } from './DarkModeProvider/DarkModeProvider';
 import { NativeBaseProvider} from "native-base";
-
+import { auth } from './firebase';
 
 const Stack = createNativeStackNavigator();
 
 
-
 export default function App() {
 
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        // User is logged in
+        setUser(user);
+      } else {
+        // No user logged in
+        setUser(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
 
   return (
@@ -23,8 +36,16 @@ export default function App() {
             <NavigationContainer >
             <DarkModeProvider>
           <Stack.Navigator>
-            <Stack.Screen options={{headerShown: false}}  name="Login" component={LoginScreen}/>
-            <Stack.Screen options={{headerShown: false}} name="Home" component={HomeScreen}/>
+            {user ? (
+              // User is logged in, show HomeScreen
+              <Stack.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} />
+            ) : (
+              // No user logged in, show LoginScreen and RegisterScreen
+              <>
+                <Stack.Screen options={{ headerShown: false }} name="Login" component={LoginScreen} />
+                <Stack.Screen options={{ headerShown: false }} name="Register" component={RegisterScreen} />
+              </>
+            )}
           </Stack.Navigator>
           </DarkModeProvider>
         </NavigationContainer>

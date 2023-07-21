@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, Appearance } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar } from 'react-native'
 import React, {useState, useEffect, useContext} from 'react'
 import { auth, db } from '../firebase'
 import { useNavigation } from '@react-navigation/native'
@@ -14,8 +14,11 @@ const SettingsScreen = () => {
   const { darkMode, toggleDarkMode, theme } = useContext(DarkModeContext);
   const [userData, setUserData] = useState(null);
   const navigation = useNavigation()
+  const statusBarHeight = StatusBar.currentHeight || 0;
 
   const handleSignOut = () => {
+    StatusBar.setBarStyle('dark-content');
+    StatusBar.setBackgroundColor('transparent');
       auth.signOut()
           .then(() => {
           navigation.replace("Login");
@@ -59,7 +62,7 @@ const SettingsScreen = () => {
 
     
   return (
-    <View style={[styles.wrap, {backgroundColor: theme.background}]}>
+    <View style={[styles.wrap, {backgroundColor: theme.background, paddingTop: statusBarHeight}]}>
      <Text style={[styles.header, {color: theme.primaryText }]}>My Account</Text>
 
         <View style={styles.container}>

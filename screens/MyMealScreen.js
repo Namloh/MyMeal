@@ -1,12 +1,13 @@
-import { StyleSheet, Text, View, Switch } from 'react-native'
+import { StyleSheet, Text, View, StatusBar } from 'react-native'
 import React, { useContext } from 'react';
 import { DarkModeContext } from '../DarkModeProvider/DarkModeProvider';
 
 const MyMealScreen = () => {
   const { theme } = useContext(DarkModeContext);
- 
+  const statusBarHeight = StatusBar.currentHeight || 0;
+
   return (
-    <View style={{minHeight: "100%", backgroundColor: theme.background}}>
+    <View style={{ minHeight: '100%', backgroundColor: theme.background , paddingTop: statusBarHeight}}>
        
        <Text style={[styles.header, {color: theme.primaryText}]}>My Meal</Text>
         <View style={styles.container}>

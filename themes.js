@@ -1,14 +1,14 @@
 // themes.js
 export const lightTheme = {
     primaryText: 'black',
-    secondaryText: '#555',
+    secondaryText: 'white',
     background: 'white',
     btnText: 'white',
   };
   
   export const darkTheme = {
     primaryText: 'white',
-    secondaryText: '#999',
+    secondaryText: 'black',
     background: 'black',
     btnText: 'black',
   };
