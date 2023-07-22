@@ -13,7 +13,7 @@ const RegisterScreen = () => {
     useEffect(() => {
       const unsub = auth.onAuthStateChanged(user => {
         if(user){
-          navigation.replace("Home")
+          navigation.replace("Welcome")
         }
       })
     
@@ -115,12 +115,12 @@ const styles = StyleSheet.create({
     },
     buttonText: {
       color: 'white',
-      fontWeight: 700,
+      fontWeight: '700',
       fontSize: 16,
     },
     btnOutlineText: {
       color: 'deepskyblue',
-      fontWeight: 700,
+      fontWeight: '700',
       fontSize: 16,
     },
     newAccText:{

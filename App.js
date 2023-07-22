@@ -8,6 +8,7 @@ import RegisterScreen from './screens/RegisterScreen';
 import { DarkModeProvider } from './DarkModeProvider/DarkModeProvider';
 import { NativeBaseProvider} from "native-base";
 import { auth } from './firebase';
+import WelcomeScreen from './screens/WelcomeScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,8 +38,11 @@ export default function App() {
             <DarkModeProvider>
           <Stack.Navigator>
             {user ? (
-              // User is logged in, show HomeScreen
-              <Stack.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} />
+              // User is logged in, show HomeScreen and WelcomeScreen
+              <>
+               <Stack.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} />
+              <Stack.Screen options={{ headerShown: false }} name="Welcome" component={WelcomeScreen} />
+              </>
             ) : (
               // No user logged in, show LoginScreen and RegisterScreen
               <>
