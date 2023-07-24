@@ -21,6 +21,7 @@ export const DarkModeContext = createContext({
   darkMode: false,
   toggleDarkMode: () => {},
   theme: lightTheme, 
+  fetchUserData: () => {},
 });
 
 export const DarkModeProvider = ({ children }) => {
@@ -38,7 +39,6 @@ export const DarkModeProvider = ({ children }) => {
             const userData = userSnapshot.data();
             console.log('User data:', userData);
             setUserData(userData)
-            console.log(userData.darkMode)
             if (userData.darkMode !== undefined) {
                 setDarkMode(userData.darkMode);
                 StatusBar.setBarStyle(userData.darkMode ? 'light-content' : 'dark-content', true);
@@ -52,10 +52,9 @@ export const DarkModeProvider = ({ children }) => {
         console.error('Error fetching user data:', error);
     }
     };
-    
-
   
   useEffect(() => {
+    
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         await fetchUserData(setUserData); // Pass setUserData function as a parameter
@@ -80,7 +79,6 @@ export const DarkModeProvider = ({ children }) => {
         StatusBar.setTranslucent(true);
         StatusBar.setBackgroundColor(!darkMode ? 'black' : 'white');
         await saveDataToFirestore('darkMode', !darkMode);
-       
       } catch (error) {
         console.error('Error toggling dark mode:', error);
       }
@@ -88,7 +86,7 @@ export const DarkModeProvider = ({ children }) => {
   const theme = darkMode ? darkTheme : lightTheme;
 
   return (
-    <DarkModeContext.Provider value={{ darkMode, toggleDarkMode, theme, userData}}>
+    <DarkModeContext.Provider value={{ darkMode, toggleDarkMode, theme, fetchUserData}}>
       {children}
     </DarkModeContext.Provider>
   );

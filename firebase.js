@@ -3,6 +3,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import { initializeApp, getApps } from 'firebase/app';
 import {getFirestore} from "firebase/firestore"
+import { GoogleAuthProvider } from "firebase/auth";
 
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -32,6 +33,10 @@ else{
 //const analytics = getAnalytics(app);
 const auth = firebase.auth()
 const db = getFirestore()
-const googleProvider = new firebase.auth.GoogleAuthProvider();
+const provider = new GoogleAuthProvider();
+provider.setCustomParameters({
+  prompt: "select_account"
+});
+const signInWithPopup = () => auth.signInWithPopup(provider);  
 
-export {auth, db, googleProvider};
+export {auth, db, provider, signInWithPopup};

@@ -26,11 +26,11 @@ const SettingsScreen = () => {
           })
           .catch(error => alert(error.message));
       };
-  onAuthStateChanged(auth, (user) => {
-  if (user) {
-      const uid = user.uid;
-  } else {
-      // User is signed out
+    onAuthStateChanged(auth, (user) => {
+    if (user) {
+        const uid = user.uid;
+    } else {
+        // User is signed out
   }
   });
 

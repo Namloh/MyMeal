@@ -1,14 +1,42 @@
 import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native'
-import React, {useEffect, useState}  from 'react'
-import { auth, GoogleAuthProvider, signInWithRedirect } from '../firebase';
+import React, {useEffect, useState, useContext}  from 'react'
+import { auth, provider, signInWithPopup } from '../firebase';
 import { useNavigation } from '@react-navigation/native'
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation()
-  
+
+  const auth = getAuth();
+    
+  const handleSignInWithGoogle = async () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        //const token = credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        // IdP data available using getAdditionalUserInfo(result)
+
+        console.log("success", user) 
+      }).catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        //const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        console.log(errorMessage)
+      });
+
+    }
+
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(user => {
       if(user){
@@ -80,6 +108,11 @@ const LoginScreen = () => {
         <Text style={styles.newAccText}>Don't have an account?</Text>
         <TouchableOpacity onPress={handleRegisterPress} style={[styles.button, styles.buttonOutline]}>
           <Text style={styles.btnOutlineText}>Register</Text>
+        </TouchableOpacity>
+       
+
+        <TouchableOpacity onPress={handleSignInWithGoogle} style={[styles.button, styles.buttonOutline]}>
+          <Text style={styles.btnOutlineText}>GOOGLE</Text>
         </TouchableOpacity>
        
       </View>
