@@ -37,19 +37,15 @@ export default function App() {
             <NavigationContainer >
             <DarkModeProvider>
           <Stack.Navigator>
-            {user ? (
-              // User is logged in, show HomeScreen and WelcomeScreen
-              <>
+
                <Stack.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} />
-              <Stack.Screen options={{ headerShown: false }} name="Welcome" component={WelcomeScreen} />
-              </>
-            ) : (
-              // No user logged in, show LoginScreen and RegisterScreen
-              <>
+               <Stack.Screen options={{ headerShown: false }} name="Welcome" component={WelcomeScreen} />
+
+
+
                 <Stack.Screen options={{ headerShown: false }} name="Login" component={LoginScreen} />
                 <Stack.Screen options={{ headerShown: false }} name="Register" component={RegisterScreen} />
-              </>
-            )}
+
           </Stack.Navigator>
           </DarkModeProvider>
         </NavigationContainer>

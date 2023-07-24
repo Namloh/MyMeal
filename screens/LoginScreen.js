@@ -22,7 +22,15 @@ const LoginScreen = () => {
         // The signed-in user info.
         const user = result.user;
         // IdP data available using getAdditionalUserInfo(result)
-
+        const isNewUser = result.additionalUserInfo?.isNewUser;
+        if (isNewUser) {
+          console.log("User is signing in with Google for the first time!");
+          navigation.replace("Welcome")
+        }
+        else{ 
+          console.log("old mf");
+          navigation.replace("Home")
+        }
         console.log("success", user) 
       }).catch((error) => {
         // Handle Errors here.
