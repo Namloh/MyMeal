@@ -1,14 +1,14 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { lightTheme, darkTheme } from '../themes';
-import { auth, db } from '../firebase'
+import { db } from '../firebase'
 import { collection, doc, setDoc, getDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from "firebase/auth";
 import { StatusBar, Appearance } from 'react-native'
-
+import auth from '@react-native-firebase/auth';
 
 const saveDataToFirestore = async (fieldName, value) => {
     try {
-        const userId = auth.currentUser.uid;
+        const userId = auth().currentUser.uid;
         const userRef = doc(collection(db, 'users'), userId);
         await setDoc(userRef, { [fieldName]: value }, { merge: true });
         console.log(`${fieldName} saved successfully!`);
@@ -31,7 +31,7 @@ export const DarkModeProvider = ({ children }) => {
 
   const fetchUserData = async () => {
     try {
-        const userId = auth.currentUser.uid;
+        const userId = auth().currentUser.uid;
         const userRef = doc(collection(db, 'users'), userId);
         const userSnapshot = await getDoc(userRef);
     
@@ -55,7 +55,7 @@ export const DarkModeProvider = ({ children }) => {
   
   useEffect(() => {
     
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth(), async (user) => {
       if (user) {
         await fetchUserData(setUserData); // Pass setUserData function as a parameter
 

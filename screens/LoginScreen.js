@@ -1,9 +1,24 @@
 import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native'
 import React, {useEffect, useState, useContext}  from 'react'
-import { auth, provider, signInWithPopup } from '../firebase';
+import { provider, signInWithPopup } from '../firebase';
 import { useNavigation } from '@react-navigation/native'
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
+import auth from '@react-native-firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
+async function onGoogleButtonPress() {
+  // Check if your device supports Google Play
+  await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+  // Get the users ID token
+  const { idToken } = await GoogleSignin.signIn();
+
+  // Create a Google credential with the token
+  const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+  // Sign-in the user with the credential
+  return auth().signInWithCredential(googleCredential);
+}
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("")
@@ -11,10 +26,11 @@ const LoginScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation()
 
-  const auth = getAuth();
-    
+  const authhh = getAuth();
+
+  /*
   const handleSignInWithGoogle = async () => {
-    signInWithPopup(auth, provider)
+    signInWithPopup(authhh, provider)
       .then((result) => {
         // This gives you a Google Access Token. You can use it to access the Google API.
         const credential = GoogleAuthProvider.credentialFromResult(result);
@@ -44,15 +60,22 @@ const LoginScreen = () => {
       });
 
     }
-
+*/
   useEffect(() => {
-    const unsub = auth.onAuthStateChanged(user => {
-      if(user){
-        
+    auth().onAuthStateChanged((user) => {
+      if (user) {
+        console.log('je tuaaaaaaaaa: ', user.metadata.creationTime);
+        console.log('je tuuuuuuuuuu: ', user.metadata.lastSignInTime);
+        if (user.metadata.creationTime === user.metadata.lastSignInTime) {
+          console.log("User is signing in with Google for the first time!");
+          navigation.replace("Welcome"); // Replace "Welcome" with the name of the screen you want to show to new users.
+        } else {
+          console.log("Returning user.");
+          navigation.replace("Home"); // Replace "Home" with the name of the screen you want to show to returning users.
+        }
       }
-    })
+    });
 
-    return unsub
   }, [])
 
 
@@ -71,7 +94,7 @@ const LoginScreen = () => {
       [{ text: "OK", onPress: () => {} }],
       { cancelable: true }
     );
-    auth
+    auth()
     .signInWithEmailAndPassword(email, password)
     .then((userCredentials) => {
       const user = userCredentials.user;
@@ -119,7 +142,7 @@ const LoginScreen = () => {
         </TouchableOpacity>
        
 
-        <TouchableOpacity onPress={handleSignInWithGoogle} style={[styles.button, styles.buttonOutline]}>
+        <TouchableOpacity onPress={onGoogleButtonPress} style={[styles.button, styles.buttonOutline]}>
           <Text style={styles.btnOutlineText}>GOOGLE</Text>
         </TouchableOpacity>
        

@@ -16,7 +16,7 @@
     ],
     "ios": {
       "supportsTablet": true
-   
+     
     },
     "android": {
       "adaptiveIcon": {
@@ -27,7 +27,8 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": ["@react-native-google-signin/google-signin"]
   
   }
 }

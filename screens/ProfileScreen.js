@@ -1,7 +1,7 @@
 import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View, StatusBar } from 'react-native'
 import React, {useState, useContext, useEffect} from 'react'
 import { collection, doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth } from '../firebase'
+import auth from '@react-native-firebase/auth';
 import {db} from "../firebase"
 import { DarkModeContext } from '../DarkModeProvider/DarkModeProvider';
 import { useFocusEffect } from '@react-navigation/native';
@@ -19,7 +19,7 @@ const ProfileScreen = () => {
  
   const fetchUserData = async () => {
     try {
-      const userId = auth.currentUser.uid;
+      const userId = auth().currentUser.uid;
       const userRef = doc(collection(db, 'users'), userId);
       const userSnapshot = await getDoc(userRef);
 
@@ -61,7 +61,7 @@ const ProfileScreen = () => {
 
   const saveDataToFirestore = async (fieldName, value) => {
     try {
-      const userId = auth.currentUser.uid;
+      const userId = auth().currentUser.uid;
       const userRef = doc(collection(db, 'users'), userId);
       await setDoc(userRef, { [fieldName]: value }, { merge: true });
       console.log(`${fieldName} saved successfully!`);

@@ -1,13 +1,13 @@
 import { StyleSheet, Text, View, TouchableOpacity, StatusBar } from 'react-native'
 import React, {useState, useEffect, useContext} from 'react'
-import { auth, db } from '../firebase'
+import { db } from '../firebase'
 import { useNavigation } from '@react-navigation/native'
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, doc, getDoc } from 'firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native';
 import { DarkModeContext } from '../DarkModeProvider/DarkModeProvider';
 import { Switch } from 'native-base'
-
+import auth from '@react-native-firebase/auth';
 
 const SettingsScreen = () => {
 
@@ -19,14 +19,14 @@ const SettingsScreen = () => {
   const handleSignOut = () => {
     StatusBar.setBarStyle('dark-content');
     StatusBar.setBackgroundColor('transparent');
-      auth.signOut()
+      auth().signOut()
           .then(() => {
           navigation.replace("Login");
           console.log("Signed out");
           })
           .catch(error => alert(error.message));
       };
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth(), (user) => {
     if (user) {
         const uid = user.uid;
     } else {
@@ -37,7 +37,7 @@ const SettingsScreen = () => {
  
   const fetchUserData = async () => {
     try {
-      const userId = auth.currentUser.uid;
+      const userId = auth().currentUser.uid;
       const userRef = doc(collection(db, 'users'), userId);
       const userSnapshot = await getDoc(userRef);
   
@@ -69,7 +69,7 @@ const SettingsScreen = () => {
 
             <Text style={[styles.emailText, {color: theme.primaryText }]}>Name: {userData?.name}</Text>
             <Text style={[styles.emailText, {color: theme.primaryText }]}>Weight: {userData?.weight} Kg</Text>
-            <Text style={[styles.emailText, {color: theme.primaryText }]}>Email: {auth.currentUser?.email}</Text>
+            <Text style={[styles.emailText, {color: theme.primaryText }]}>Email: {auth().currentUser?.email}</Text>
      
       
 

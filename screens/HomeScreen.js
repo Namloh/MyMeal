@@ -1,6 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View, Appearance } from 'react-native'
 import React, {useState, useContext} from 'react'
-import { auth } from '../firebase'
 import { useNavigation } from '@react-navigation/native'
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';

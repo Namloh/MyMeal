@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Modal , StyleSheet} from 'react-native';
 import { DarkModeContext } from '../DarkModeProvider/DarkModeProvider';
-import { auth, db } from '../firebase'
+import { db } from '../firebase'
 import { collection, doc, setDoc, getDoc } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native'
-
+import auth from '@react-native-firebase/auth';
 
 const PopupInputComponent = () => {
   const popupTypes = ['name', 'weight']; // Add more popup types as needed
@@ -25,7 +25,7 @@ const PopupInputComponent = () => {
 
     const saveDataToFirestore = async (fieldName, value) => {
         try {
-            const userId = auth.currentUser.uid;
+            const userId = auth().currentUser.uid;
             const userRef = doc(collection(db, 'users'), userId);
             await setDoc(userRef, { [fieldName]: value }, { merge: true });
             console.log(`${fieldName} saved successfully!`);
