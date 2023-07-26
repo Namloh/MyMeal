@@ -8,8 +8,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 
 const ProfileScreen = () => {
-  const { theme } = useContext(DarkModeContext);
-  const [userData, setUserData] = useState(null);
+  const { darkMode, toggleDarkMode, theme, fetchUserData, saveDataToFirestore, userData } = useContext(DarkModeContext);
   const [editingData, setEditingData] = useState({
     field: '',
     value: '',
@@ -17,23 +16,6 @@ const ProfileScreen = () => {
 
   const statusBarHeight = StatusBar.currentHeight || 0;
  
-  const fetchUserData = async () => {
-    try {
-      const userId = auth().currentUser.uid;
-      const userRef = doc(collection(db, 'users'), userId);
-      const userSnapshot = await getDoc(userRef);
-
-      if (userSnapshot.exists()) {
-        const userData = userSnapshot.data();
-        console.log('User data:', userData);
-        setUserData(userData);
-      } else {
-        console.log('No user data found.');
-      }
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
-  };
 
   const resetEditingData = () => {
     setEditingData({ field: '', value: '' });
@@ -59,16 +41,7 @@ const ProfileScreen = () => {
     }
   };
 
-  const saveDataToFirestore = async (fieldName, value) => {
-    try {
-      const userId = auth().currentUser.uid;
-      const userRef = doc(collection(db, 'users'), userId);
-      await setDoc(userRef, { [fieldName]: value }, { merge: true });
-      console.log(`${fieldName} saved successfully!`);
-    } catch (error) {
-      console.error(`Error saving ${fieldName}:`, error);
-    }
-  };
+
 
   return (
     <KeyboardAvoidingView
@@ -87,9 +60,9 @@ const ProfileScreen = () => {
           // Show the input popup for weight if editingData.field is 'weight'
           <View style={styles.inputContainer}>
             <TextInput
-              style={[styles.input, { color: 'black'  }]}
+              style={[styles.input, { color: theme.primaryText, backgroundColor: theme.background }]}
               placeholder={`Enter weight`}
-              value={editingData.value}
+              value={userData?.weightSystem === 'Imperial' ? `${(editingData.value * 2.205).toFixed(2)}` : `${editingData.value}`}
               onChangeText={text => setEditingData({ ...editingData, value: text })}
               keyboardType="numeric"
             />
@@ -100,7 +73,7 @@ const ProfileScreen = () => {
         ) : (
           // Show the weight and "Edit" button if not in editing mode for weight
           <View  style={styles.itemC}>
-            <Text style={[styles.label, { color: theme.primaryText }]}>Weight: {userData?.weight}</Text>
+            <Text style={[styles.label, { color: theme.primaryText }]}>Weight: {userData?.weightSystem === 'Imperial' ? `${(userData?.weight * 2.205).toFixed(2)} lbs` : `${userData?.weight} Kg`}</Text>
             <TouchableOpacity
               onPress={() => openEditor('weight', userData?.weight || '')}
               style={styles.editButton}
@@ -112,32 +85,40 @@ const ProfileScreen = () => {
       </View>
 
       <View style={styles.itemContainer}>
-        {editingData.field === 'name' ? (
-          // Show the input popup for name if editingData.field is 'name'
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={[styles.input, { color: 'black' }]}
-              placeholder={`Enter name`}
-              value={editingData.value}
-              onChangeText={text => setEditingData({ ...editingData, value: text })}
-            />
-            <TouchableOpacity onPress={saveData} style={styles.editButton}>
-              <Text style={[styles.editButtonText, { color: theme.btnText }]}>Save</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          // Show the name and "Edit" button if not in editing mode for name
-          <View  style={styles.itemC}>
-            <Text style={[styles.label, { color: theme.primaryText }]}>Name: {userData?.name}</Text>
-            <TouchableOpacity
-              onPress={() => openEditor('name', userData?.name || '')}
-              style={styles.editButton}
-            >
-              <Text style={[styles.editButtonText, { color: theme.btnText }]}>Edit</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
+  {editingData.field === 'name' ? (
+    // Show the input popup for name if editingData.field is 'name'
+    <View style={styles.inputContainer}>
+      <TextInput
+        style={[styles.input, { color: theme.primaryText, backgroundColor: theme.background }]}
+        placeholder={`Enter name`}
+        value={editingData.value}
+        onChangeText={text => setEditingData({ ...editingData, value: text })}
+        numberOfLines={1} // Add this line to allow text to wrap to the next line
+      />
+      <TouchableOpacity onPress={saveData} style={styles.editButton}>
+        <Text style={[styles.editButtonText, { color: theme.btnText }]}>Save</Text>
+      </TouchableOpacity>
+    </View>
+  ) : (
+    // Show the name and "Edit" button if not in editing mode for name
+    <View style={styles.itemC}>
+      <Text style={[styles.label, { color: theme.primaryText }]}>Name: {userData?.name}</Text>
+      <TouchableOpacity
+        onPress={() => openEditor('name', userData?.name || '')}
+        style={styles.editButton}
+      >
+        <Text style={[styles.editButtonText, { color: theme.btnText }]}>Edit</Text>
+      </TouchableOpacity>
+    </View>
+  )}
+</View>
+
+
+
+
+
+
+
 
     </View>
   </View>
@@ -167,7 +148,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 20,
-    
+    maxWidth: 250,
   },
   editButton: {
     padding: 10,
@@ -205,7 +186,7 @@ const styles = StyleSheet.create({
       borderWidth: 2,
       marginTop: 5,
       fontSize: 20,
-      maxWidth: 150,
+      maxWidth: 200,
     },
     buttonContainer: {
       width: "60%",

@@ -7,21 +7,36 @@ import { StatusBar, Appearance } from 'react-native'
 import auth from '@react-native-firebase/auth';
 
 const saveDataToFirestore = async (fieldName, value) => {
-    try {
-        const userId = auth().currentUser.uid;
-        const userRef = doc(collection(db, 'users'), userId);
-        await setDoc(userRef, { [fieldName]: value }, { merge: true });
-        console.log(`${fieldName} saved successfully!`);
-    } catch (error) {
-        console.error(`Error saving ${fieldName}:`, error);
-}
+  try {
+    if (fieldName === 'name' && value.length > 15) {
+      alert("Name should not be more than 15 characters long.")
+      value = value.slice(0, 15); // Truncate the name to 15 characters
+    }
+    if (fieldName === 'weight' ) {
+      if(value.length > 10){
+        alert("Weight should not be more than 10 characters long.")
+        value = value.slice(0, 10); // Truncate the name to 15 characters
+      }
+      value = parseFloat(value).toFixed(2);
+     
+    }
+    const userId = auth().currentUser.uid;
+    const userRef = doc(collection(db, 'users'), userId);
+    await setDoc(userRef, { [fieldName]: value }, { merge: true });
+    console.log(`${fieldName} saved successfully!`);
+  } catch (error) {
+    console.error(`Error saving ${fieldName}:`, error);
+  }
 };
+
 
 export const DarkModeContext = createContext({
   darkMode: false,
   toggleDarkMode: () => {},
   theme: lightTheme, 
   fetchUserData: () => {},
+  saveDataToFirestore: () => {},
+  userData: null,
 });
 
 export const DarkModeProvider = ({ children }) => {
@@ -83,10 +98,12 @@ export const DarkModeProvider = ({ children }) => {
         console.error('Error toggling dark mode:', error);
       }
   };
+
+  
   const theme = darkMode ? darkTheme : lightTheme;
 
   return (
-    <DarkModeContext.Provider value={{ darkMode, toggleDarkMode, theme, fetchUserData}}>
+    <DarkModeContext.Provider value={{ darkMode, toggleDarkMode, theme, fetchUserData, saveDataToFirestore, userData}}>
       {children}
     </DarkModeContext.Provider>
   );

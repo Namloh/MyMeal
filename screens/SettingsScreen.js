@@ -8,16 +8,20 @@ import { useFocusEffect } from '@react-navigation/native';
 import { DarkModeContext } from '../DarkModeProvider/DarkModeProvider';
 import { Switch } from 'native-base'
 import auth from '@react-native-firebase/auth';
+import { ButtonGroup } from '@rneui/themed';
+
 
 const SettingsScreen = () => {
 
-  const { darkMode, toggleDarkMode, theme } = useContext(DarkModeContext);
-  const [userData, setUserData] = useState(null);
+  const { darkMode, toggleDarkMode, theme, fetchUserData, saveDataToFirestore, userData } = useContext(DarkModeContext);
+  const [weightSystem, setWeightSystem] = useState('Metric');
+  const [selectedIndex, setSelectedIndex] = useState(userData?.weightSystem === 'Metric' ? 0 : 1);
+
   const navigation = useNavigation()
   const statusBarHeight = StatusBar.currentHeight || 0;
 
   const handleSignOut = () => {
-    StatusBar.setBarStyle('dark-content');
+    StatusBar.setBarStyle('dark-content'); 
     StatusBar.setBackgroundColor('transparent');
       auth().signOut()
           .then(() => {
@@ -34,31 +38,24 @@ const SettingsScreen = () => {
   }
   });
 
+
+
+  const toggleWeightSystem = async () => { 
+    try {     
+        setWeightSystem((prev) => (prev === 'Metric' ? 'Imperial' : 'Metric'));
+
+        await saveDataToFirestore('weightSystem', weightSystem);
+        fetchUserData();
+      } catch (error) {
+        console.error('Error toggling weight system:', error);
+      }  
+  }; 
  
-  const fetchUserData = async () => {
-    try {
-      const userId = auth().currentUser.uid;
-      const userRef = doc(collection(db, 'users'), userId);
-      const userSnapshot = await getDoc(userRef);
-  
-      if (userSnapshot.exists()) {
-        const userData = userSnapshot.data();
-        console.log('User data:', userData);
-        setUserData(userData)
-      } else {
-        console.log('No user data found.');
-      }
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
-  };
-
-
   useFocusEffect(
     React.useCallback(() => {
       fetchUserData();
     }, [])
-    );
+    ); 
 
     
   return (
@@ -68,18 +65,33 @@ const SettingsScreen = () => {
         <View style={styles.container}>
 
             <Text style={[styles.emailText, {color: theme.primaryText }]}>Name: {userData?.name}</Text>
-            <Text style={[styles.emailText, {color: theme.primaryText }]}>Weight: {userData?.weight} Kg</Text>
+            <Text style={[styles.emailText, {color: theme.primaryText }]}>Weight: {userData?.weightSystem === 'Imperial' ? `${(userData?.weight * 2.205).toFixed(2)} lbs` : `${userData?.weight} Kg`}</Text>
             <Text style={[styles.emailText, {color: theme.primaryText }]}>Email: {auth().currentUser?.email}</Text>
      
-      
+         
 
             <View style={styles.switchContainer}>
             <Text style={[styles.emailText, {color: theme.primaryText }]}>
-              {darkMode ? 'Light Mode' : 'Dark Mode'}
+              {darkMode ? 'Light Mode' : 'Dark Mode'}   
             </Text>
             <Switch onTrackColor={"deepskyblue"} value={darkMode} onToggle={toggleDarkMode} />
+          </View> 
+ 
+
+            <ButtonGroup
+              buttons={['Metric System', 'Imperial System (ew)']}
+              selectedIndex={selectedIndex}
+              onPress={(value) => {
+                setSelectedIndex(value)
+                toggleWeightSystem()
+              }}
+              containerStyle={{ maxWidth: '100%', marginLeft: 'auto', marginRight: 30, backgroundColor: theme.background, borderColor: theme.primaryText }}
+              textStyle={{ color: theme.primaryText, fontWeight: '700', fontSize: 15 }}
+              selectedButtonStyle={{backgroundColor: 'deepskyblue'}}
+            />
           </View>
-        </View>
+
+
         <TouchableOpacity
             onPress={handleSignOut}
             style={styles.button}

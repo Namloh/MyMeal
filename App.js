@@ -18,9 +18,6 @@ const Stack = createNativeStackNavigator();
 
 
 export default function App() {
-
-  const [user, setUser] = useState(null);
-
   
   return (
 
@@ -28,7 +25,8 @@ export default function App() {
             <NavigationContainer >
             <DarkModeProvider>
           <Stack.Navigator>
-          <Stack.Screen options={{ headerShown: false }} name="Login" component={LoginScreen} />
+
+                <Stack.Screen options={{ headerShown: false }} name="Login" component={LoginScreen} />
                 <Stack.Screen options={{ headerShown: false }} name="Register" component={RegisterScreen} />
 
 

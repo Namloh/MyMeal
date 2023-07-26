@@ -7,18 +7,9 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import auth from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
-async function onGoogleButtonPress() {
-  // Check if your device supports Google Play
-  await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-  // Get the users ID token
-  const { idToken } = await GoogleSignin.signIn();
+import { SocialIcon, Divider } from '@rneui/themed';
 
-  // Create a Google credential with the token
-  const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
-  // Sign-in the user with the credential
-  return auth().signInWithCredential(googleCredential);
-}
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("")
@@ -26,43 +17,24 @@ const LoginScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation()
 
-  const authhh = getAuth();
 
-  /*
-  const handleSignInWithGoogle = async () => {
-    signInWithPopup(authhh, provider)
-      .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        //const token = credential.accessToken;
-        // The signed-in user info.
-        const user = result.user;
-        // IdP data available using getAdditionalUserInfo(result)
-        const isNewUser = result.additionalUserInfo?.isNewUser;
-        if (isNewUser) {
-          console.log("User is signing in with Google for the first time!");
-          navigation.replace("Welcome")
-        }
-        else{ 
-          console.log("old mf");
-          navigation.replace("Home")
-        }
-        console.log("success", user) 
-      }).catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        //const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        console.log(errorMessage)
-      });
+  async function onGoogleButtonPress() {
+    setIsLoading(true);
+    // Check if your device supports Google Play
+    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+    // Get the users ID token
+    const { idToken } = await GoogleSignin.signIn();
+  
+    // Create a Google credential with the token
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+  
+    // Sign-in the user with the credential
+    
+    return auth().signInWithCredential(googleCredential);
+  }
 
-    }
-*/
   useEffect(() => {
-    auth().onAuthStateChanged((user) => {
+    const unsubscribe = auth().onAuthStateChanged((user) => {
       if (user) {
         console.log('je tuaaaaaaaaa: ', user.metadata.creationTime);
         console.log('je tuuuuuuuuuu: ', user.metadata.lastSignInTime);
@@ -73,9 +45,13 @@ const LoginScreen = () => {
           console.log("Returning user.");
           navigation.replace("Home"); // Replace "Home" with the name of the screen you want to show to returning users.
         }
+        setIsLoading(false);
       }
     });
-
+    return () => {
+      // Clean up the listener when the component is unmounted
+      unsubscribe();
+    };
   }, [])
 
 
@@ -87,7 +63,7 @@ const LoginScreen = () => {
 
   
   const handleLogIn = () => {
-    setIsLoading(true); 
+    
     Alert.alert(
       "Logging In",
       "Please wait while we log you in...",
@@ -100,11 +76,11 @@ const LoginScreen = () => {
       const user = userCredentials.user;
       console.log("Logged in with ", user.email);
 
-      setIsLoading(false); // Set isLoading back to false after the login is successful
+    
     })
     .catch((error) => {
       alert(error.message);
-      setIsLoading(false); // Set isLoading back to false after the login attempt (whether it succeeded or failed)
+     
     });
   
   }
@@ -129,22 +105,29 @@ const LoginScreen = () => {
                 secureTextEntry/>
 
       </View>
-
+    
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={handleLogIn} style={[styles.button]}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
 
-
+        
         <Text style={styles.newAccText}>Don't have an account?</Text>
         <TouchableOpacity onPress={handleRegisterPress} style={[styles.button, styles.buttonOutline]}>
           <Text style={styles.btnOutlineText}>Register</Text>
         </TouchableOpacity>
        
 
-        <TouchableOpacity onPress={onGoogleButtonPress} style={[styles.button, styles.buttonOutline]}>
-          <Text style={styles.btnOutlineText}>GOOGLE</Text>
-        </TouchableOpacity>
+
+        <Divider  subHeaderStyle={{ color: 'deepskyblue', marginRight: 'auto', marginLeft: 'auto', fontWeight: '400', fontSize: 20, marginBottom: 10 }}  subHeader="Log in using socials" style={{width:"100%",marginTop:25, marginBottom: 5}} color='deepskyblue' width={1} inset={false} insetType="middle" />
+
+        <SocialIcon onPress={onGoogleButtonPress}
+      type='google'
+      title='Google'
+      iconSize={28}
+      loading={isLoading} 
+    />
+      
        
       </View>
 
@@ -181,7 +164,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       marginTop: 40,
-      
+      textAlign: 'center',
     },
     button: {
       backgroundColor: "deepskyblue",
