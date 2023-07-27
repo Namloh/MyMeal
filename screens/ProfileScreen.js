@@ -33,7 +33,12 @@ const ProfileScreen = () => {
 
   const saveData = async () => {
     try {
+      if(userData?.weightSystem === 'Imperial' && editingData.field === 'weight'){
+        await saveDataToFirestore(editingData.field, (parseFloat(editingData.value)/2.205).toFixed(2));
+      }
+     else{
       await saveDataToFirestore(editingData.field, editingData.value);
+     }
       setEditingData({ field: '', value: '' });
       await fetchUserData(); // Await the fetchUserData function after saving the data
     } catch (error) {
@@ -62,7 +67,7 @@ const ProfileScreen = () => {
             <TextInput
               style={[styles.input, { color: theme.primaryText, backgroundColor: theme.background }]}
               placeholder={`Enter weight`}
-              value={userData?.weightSystem === 'Imperial' ? `${(editingData.value * 2.205).toFixed(2)}` : `${editingData.value}`}
+              value={`${editingData.value}`}
               onChangeText={text => setEditingData({ ...editingData, value: text })}
               keyboardType="numeric"
             />
@@ -75,7 +80,7 @@ const ProfileScreen = () => {
           <View  style={styles.itemC}>
             <Text style={[styles.label, { color: theme.primaryText }]}>Weight: {userData?.weightSystem === 'Imperial' ? `${(userData?.weight * 2.205).toFixed(2)} lbs` : `${userData?.weight} Kg`}</Text>
             <TouchableOpacity
-              onPress={() => openEditor('weight', userData?.weight || '')}
+              onPress={userData?.weightSystem === 'Imperial' ?  () => openEditor('weight', (userData?.weight*2.205).toFixed(2) || '') : () => openEditor('weight', userData?.weight || '')}
               style={styles.editButton}
             >
               <Text style={[styles.editButtonText, { color: theme.btnText }]}>Edit</Text>

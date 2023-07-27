@@ -22,7 +22,7 @@ const PopupInputComponent = () => {
     setPopups((prevPopups) => prevPopups.slice(0, prevPopups.length - 1));
   };
 
-
+ 
     const saveDataToFirestore = async (fieldName, value) => {
         try {
             const userId = auth().currentUser.uid;
@@ -56,6 +56,7 @@ const PopupInputComponent = () => {
 
   useEffect(() => {
     saveDataToFirestore('darkMode', false)
+    saveDataToFirestore('weightSystem', "Metric");
     addPopup(popupTypes[currentPopupIndex]);
     
   }, []);
@@ -84,14 +85,14 @@ const PopupInputComponent = () => {
                   placeholderTextColor={theme.primaryText} 
                   textAlign='center'
                 />
-
+ 
                 {/* Submit button for the current popup */}
                 <TouchableOpacity title="Submit" onPress={handleInputSubmit} style={styles.btn}>
                   <Text style={[styles.editButtonText, { color: theme.btnText }]}>Submit</Text>
                 </TouchableOpacity>
 
                 {/* Close button for the current popup */}
-                <TouchableOpacity title="Close" onPress={removePopup} style={styles.btn}>
+                <TouchableOpacity title="Close" onPress={handleInputSubmit} style={styles.btn}>
                     <Text style={[styles.editButtonText, { color: theme.btnText }]}>Later</Text>
                 </TouchableOpacity>
               </View>

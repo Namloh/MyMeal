@@ -15,7 +15,7 @@ const SettingsScreen = () => {
 
   const { darkMode, toggleDarkMode, theme, fetchUserData, saveDataToFirestore, userData } = useContext(DarkModeContext);
   const [weightSystem, setWeightSystem] = useState('Metric');
-  const [selectedIndex, setSelectedIndex] = useState(userData?.weightSystem === 'Metric' ? 0 : 1);
+  const [selectedIndex, setSelectedIndex] = useState(userData?.weightSystem === 'Metric' ? 0 : 1);  
 
   const navigation = useNavigation()
   const statusBarHeight = StatusBar.currentHeight || 0;
@@ -54,9 +54,12 @@ const SettingsScreen = () => {
   useFocusEffect(
     React.useCallback(() => {
       fetchUserData();
+
     }, [])
     ); 
-
+ useEffect(() => {
+    toggleWeightSystem(); // This will run only after the initial render and when the component is mounted
+  }, []);
     
   return (
     <View style={[styles.wrap, {backgroundColor: theme.background, paddingTop: statusBarHeight}]}>

@@ -2,24 +2,25 @@ import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, Vi
 import React, {useEffect, useState, useContext}  from 'react'
 import { provider, signInWithPopup } from '../firebase';
 import { useNavigation } from '@react-navigation/native'
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
-
+import { getAuth, GoogleAuthProvider, sendPasswordResetEmail } from "firebase/auth";
+import { differenceInSeconds } from 'date-fns'; 
 import auth from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
-import { SocialIcon, Divider } from '@rneui/themed';
+import { SocialIcon, Divider, Button  } from '@rneui/themed';
 
 
-
+ 
 const LoginScreen = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
+  const [isLoadingLogIn, setIsLoadingLogIn] = useState(false);
   const navigation = useNavigation()
 
 
   async function onGoogleButtonPress() {
-    setIsLoading(true);
+    setIsLoadingGoogle(true);
     // Check if your device supports Google Play
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
     // Get the users ID token
@@ -29,23 +30,32 @@ const LoginScreen = () => {
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
   
     // Sign-in the user with the credential
-    
     return auth().signInWithCredential(googleCredential);
   }
 
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged((user) => {
       if (user) {
-        console.log('je tuaaaaaaaaa: ', user.metadata.creationTime);
-        console.log('je tuuuuuuuuuu: ', user.metadata.lastSignInTime);
-        if (user.metadata.creationTime === user.metadata.lastSignInTime) {
+        const creationTime = new Date(user.metadata.creationTime);
+        const lastSignInTime = new Date(user.metadata.lastSignInTime);
+        console.log(creationTime)
+        console.log(lastSignInTime)
+        const thresholdSeconds = -5; // Set the threshold in seconds
+    
+        const timeDifference = differenceInSeconds(creationTime, lastSignInTime);
+        console.log(timeDifference)
+        if (timeDifference >= thresholdSeconds) {
           console.log("User is signing in with Google for the first time!");
-          navigation.replace("Welcome"); // Replace "Welcome" with the name of the screen you want to show to new users.
+          navigation.replace("Welcome");
         } else {
           console.log("Returning user.");
-          navigation.replace("Home"); // Replace "Home" with the name of the screen you want to show to returning users.
+          navigation.replace("Home");
         }
-        setIsLoading(false);
+ 
+
+        //remove loadings
+        setIsLoadingGoogle(false);
+        setIsLoadingLogIn(false)
       }
     });
     return () => {
@@ -63,32 +73,37 @@ const LoginScreen = () => {
 
   
   const handleLogIn = () => {
-    
-    Alert.alert(
-      "Logging In",
-      "Please wait while we log you in...",
-      [{ text: "OK", onPress: () => {} }],
-      { cancelable: true }
-    );
+    if(email == "" || password == ""){
+      Alert.alert(
+        "Email or password were not provided",
+        "Try again...",
+        [{ text: "OK", onPress: () => {} }],
+        { cancelable: true }
+      );
+      return
+    }
+    setIsLoadingLogIn(true)
     auth()
     .signInWithEmailAndPassword(email, password)
     .then((userCredentials) => {
       const user = userCredentials.user;
       console.log("Logged in with ", user.email);
 
-    
+     
     })
     .catch((error) => {
       alert(error.message);
-     
+      
     });
   
+    
+    
   }
 
 
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior='padding' keyboardVerticalOffset={-350}>
+    <KeyboardAvoidingView style={styles.container} behavior='padding' keyboardVerticalOffset={-400}>
       <View style={styles.inputContainer}>
 
         <TextInput
@@ -107,16 +122,52 @@ const LoginScreen = () => {
       </View>
     
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={handleLogIn} style={[styles.button]}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-
+     
+        <Button
+              title="LOG IN"
+              buttonStyle={{
+                backgroundColor: 'deepskyblue',
+                borderWidth: 2,
+                borderColor: 'white',
+                borderRadius: 20,
+                height: 63,
+              }}
+              containerStyle={{
+                width: 253,
+                marginHorizontal: 10,
+                marginVertical: 0,
+                borderRadius: 20,
+              }}
+              titleStyle={{ fontWeight: 'bold', fontSize: 18 }}
+              loading={isLoadingLogIn}
+              loadingProps={{ size: 'large', color: 'white' }}
+              onPress={handleLogIn} 
+              raised={true}
+            
+            />
         
         <Text style={styles.newAccText}>Don't have an account?</Text>
-        <TouchableOpacity onPress={handleRegisterPress} style={[styles.button, styles.buttonOutline]}>
-          <Text style={styles.btnOutlineText}>Register</Text>
-        </TouchableOpacity>
-       
+        <Button
+              title="Register"
+              buttonStyle={{
+                backgroundColor: 'white',
+                borderWidth: 2,
+                borderColor: 'deepskyblue',
+                borderRadius: 20,
+                height: 60,
+                
+              }}
+         
+              containerStyle={{
+                width: 250,
+                marginHorizontal: 10,
+                marginVertical: 5,
+                borderRadius: 20,
+              }}
+              titleStyle={{ fontWeight: 'bold',  color: 'deepskyblue',fontSize: 18 }}
+              onPress={handleRegisterPress} 
+              raised={true}
+            />
 
 
         <Divider  subHeaderStyle={{ color: 'deepskyblue', marginRight: 'auto', marginLeft: 'auto', fontWeight: '400', fontSize: 20, marginBottom: 10 }}  subHeader="Log in using socials" style={{width:"100%",marginTop:25, marginBottom: 5}} color='deepskyblue' width={1} inset={false} insetType="middle" />
@@ -125,7 +176,7 @@ const LoginScreen = () => {
       type='google'
       title='Google'
       iconSize={28}
-      loading={isLoading} 
+      loading={isLoadingGoogle} 
     />
       
        

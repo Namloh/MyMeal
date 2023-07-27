@@ -1,18 +1,22 @@
-import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native'
 import React, {useEffect, useState}  from 'react'
 import auth from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native'
+import {  Divider, Button  } from '@rneui/themed';
+
 
 const RegisterScreen = () => {
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-  
+    const [isLoadingRegister, setIsLoadingRegister] = useState(false);
    
     const navigation = useNavigation()
     useEffect(() => {
       const unsub = auth().onAuthStateChanged(user => {
         if(user){
+          setIsLoadingRegister(false)
+
           navigation.replace("Welcome")
         }
       })
@@ -26,6 +30,16 @@ const RegisterScreen = () => {
       };
     
     const handleSignUp = () => {
+      if(email == "" || password == ""){
+        Alert.alert(
+          "Email or password were not provided",
+          "Try again...",
+          [{ text: "OK", onPress: () => {} }],
+          { cancelable: true }
+        );
+        return
+      }
+      setIsLoadingRegister(true)
       auth().createUserWithEmailAndPassword(email,password)
       .then(userCredentials => 
         {
@@ -57,15 +71,50 @@ const RegisterScreen = () => {
     </View>
 
     <View style={styles.buttonContainer}>
+      <Button
+              title="Create MyMeal Account"
+              buttonStyle={{
+                backgroundColor: 'deepskyblue',
+                borderWidth: 2,
+                borderColor: 'white',
+                borderRadius: 20,
+                height: 63,
+              }}
+              containerStyle={{
+                width: 253,
+                marginHorizontal: 10,
+                marginVertical: 0,
+                borderRadius: 20,
+              }}
+              titleStyle={{ fontWeight: 'bold', fontSize: 18 }}
+              loading={isLoadingRegister}
+              loadingProps={{ size: 'large', color: 'white' }}
+              onPress={handleSignUp} 
+              raised={true}
+            
+            />
+
      
-      <TouchableOpacity onPress={handleSignUp} style={[styles.button]}>
-        <Text style={styles.buttonText}>Crate MyMeal Account</Text>
-      </TouchableOpacity>
-
-
-      <TouchableOpacity onPress={handleLoginPress} style={[styles.button, styles.buttonOutline]}>
-        <Text style={styles.btnOutlineText}>Back to Login</Text>
-      </TouchableOpacity>
+      <Button
+              title="Back to Login"
+              buttonStyle={{
+                backgroundColor: 'white',
+                borderWidth: 2,
+                borderColor: 'deepskyblue',
+                borderRadius: 20,
+                height: 60,
+                
+              }}
+              containerStyle={{
+                width: 250,
+                marginHorizontal: 10,
+                marginVertical: 5,
+                borderRadius: 20,
+              }}
+              titleStyle={{ fontWeight: 'bold',  color: 'deepskyblue',fontSize: 18 }}
+              onPress={handleLoginPress} 
+              raised={true}
+            />
     </View>
   </KeyboardAvoidingView>
   )
@@ -95,7 +144,7 @@ const styles = StyleSheet.create({
       width: "60%",
       justifyContent: 'center',
       alignItems: 'center',
-      marginTop: 40,
+      marginTop: 30,
       
     },
     button: {
