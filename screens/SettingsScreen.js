@@ -6,9 +6,9 @@ import { onAuthStateChanged } from "firebase/auth";
 import { collection, doc, getDoc } from 'firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native';
 import { DarkModeContext } from '../DarkModeProvider/DarkModeProvider';
-import { Switch } from 'native-base'
+
 import auth from '@react-native-firebase/auth';
-import { ButtonGroup } from '@rneui/themed';
+import { ButtonGroup, Switch  } from '@rneui/themed';
 
 
 const SettingsScreen = () => {
@@ -39,10 +39,21 @@ const SettingsScreen = () => {
   });
 
 
+  useEffect(() => {
+    console.log(selectedIndex);
+    toggleWeightSystem()
+  }, [selectedIndex]);  
 
   const toggleWeightSystem = async () => { 
-    try {     
-        setWeightSystem((prev) => (prev === 'Metric' ? 'Imperial' : 'Metric'));
+    try {   
+        if(selectedIndex === 0){
+          setWeightSystem("Imperial");
+        }
+        else{
+          setWeightSystem("Metric");
+        } 
+ 
+      
 
         await saveDataToFirestore('weightSystem', weightSystem);
         fetchUserData();
@@ -57,9 +68,6 @@ const SettingsScreen = () => {
 
     }, [])
     ); 
- useEffect(() => {
-    toggleWeightSystem(); // This will run only after the initial render and when the component is mounted
-  }, []);
     
   return (
     <View style={[styles.wrap, {backgroundColor: theme.background, paddingTop: statusBarHeight}]}>
@@ -77,23 +85,22 @@ const SettingsScreen = () => {
             <Text style={[styles.emailText, {color: theme.primaryText }]}>
               {darkMode ? 'Light Mode' : 'Dark Mode'}   
             </Text>
-            <Switch onTrackColor={"deepskyblue"} value={darkMode} onToggle={toggleDarkMode} />
+            <Switch style={{marginLeft: "auto", marginTop: 5}} color={"deepskyblue"} value={darkMode}  onValueChange={() => toggleDarkMode()} />
           </View> 
  
 
             <ButtonGroup
-              buttons={['Metric System', 'Imperial System (ew)']}
+              buttons={['Metric System', 'Imperial System (US)']}
               selectedIndex={selectedIndex}
               onPress={(value) => {
                 setSelectedIndex(value)
-                toggleWeightSystem()
-              }}
+              }} 
               containerStyle={{ maxWidth: '100%', marginLeft: 'auto', marginRight: 30, backgroundColor: theme.background, borderColor: theme.primaryText }}
               textStyle={{ color: theme.primaryText, fontWeight: '700', fontSize: 15 }}
               selectedButtonStyle={{backgroundColor: 'deepskyblue'}}
             />
           </View>
-
+   
 
         <TouchableOpacity
             onPress={handleSignOut}
@@ -122,6 +129,7 @@ const styles = StyleSheet.create({
     },
     emailText: {
         fontSize: 20,
+        marginBottom: 5
       },
       button: {
         backgroundColor: "deepskyblue",
@@ -142,6 +150,11 @@ const styles = StyleSheet.create({
         fontSize: 30,
         marginLeft: 10,
         marginTop: 10,
+      },
+      switchContainer:{
+        width: "90%",
+        flexDirection: 'row',
+        alignItems: 'center',
       }
   
 })

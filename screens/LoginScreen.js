@@ -6,7 +6,7 @@ import { getAuth, GoogleAuthProvider, sendPasswordResetEmail } from "firebase/au
 import { differenceInSeconds } from 'date-fns'; 
 import auth from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-
+import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 import { SocialIcon, Divider, Button  } from '@rneui/themed';
 
 
@@ -31,6 +31,32 @@ const LoginScreen = () => {
   
     // Sign-in the user with the credential
     return auth().signInWithCredential(googleCredential);
+  }
+
+   
+  async function onFacebookButtonPress() {
+   // COMPUTER CRASH LIKE WTF!!!!
+/*
+    const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+  
+    console.log(result)
+  
+    if (result.isCancelled) {
+      console.log("User has cancelled the login process")
+    }
+    */
+   
+    // Once signed in, get the users AccessToken
+    const data = await AccessToken.getCurrentAccessToken();
+
+    if (!data) {
+      console.log('Something went wrong obtaining access token')
+    }
+    // Create a Firebase credential with the AccessToken
+    const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
+    // Sign-in the user with the credential
+    return auth().signInWithCredential(facebookCredential);
+   
   }
 
   useEffect(() => {
@@ -175,6 +201,13 @@ const LoginScreen = () => {
         <SocialIcon onPress={onGoogleButtonPress}
       type='google'
       title='Google'
+      iconSize={28}
+      loading={isLoadingGoogle} 
+    />
+
+<SocialIcon onPress={onFacebookButtonPress}
+      type='facebook'
+      title='Facebook'
       iconSize={28}
       loading={isLoadingGoogle} 
     />
