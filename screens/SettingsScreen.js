@@ -1,9 +1,9 @@
-import { StyleSheet, Text, View, TouchableOpacity, StatusBar } from 'react-native'
-import React, {useState, useEffect, useContext} from 'react'
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Alert } from 'react-native'
+import React, {useState, useEffect, useContext, useRef} from 'react'
 import { db } from '../firebase'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native' 
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, deleteDoc  } from 'firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native';
 import { DarkModeContext } from '../DarkModeProvider/DarkModeProvider';
 
@@ -37,7 +37,42 @@ const SettingsScreen = () => {
         // User is signed out
   }
   });
+  async function deleteAccount() {
+    
+    Alert.alert(
+      "This action will delete all your data and cannot be undone!",
+      "Do you wish to continue?",
+      [
+        {
+          text: "Yes",
+          onPress: () => {
+            const uid = auth().currentUser.uid;
+            auth()
+              .currentUser.delete()
+              .then(() => {
+                deleteDoc(doc(db, "users", uid));
+              })
+              .catch((error) => {
+                console.log(error, "error");
+              })
+              .finally(() => {
+                navigation.replace("Login");
+                console.log("Account terminated");
+              });
+          },
+        },
+        {
+          text: "Cancel",   
+          onPress: () => {}, 
+          style: "cancel", 
+        },
+      ],
+      { cancelable: true }
+    );
 
+  }
+  
+  
 
   useEffect(() => {
     console.log(selectedIndex);
@@ -64,8 +99,7 @@ const SettingsScreen = () => {
  
   useFocusEffect(
     React.useCallback(() => {
-      fetchUserData();
-
+      fetchUserData()
     }, [])
     ); 
     
@@ -74,7 +108,7 @@ const SettingsScreen = () => {
      <Text style={[styles.header, {color: theme.primaryText }]}>My Account</Text>
 
         <View style={styles.container}>
-
+        
             <Text style={[styles.emailText, {color: theme.primaryText }]}>Name: {userData?.name}</Text>
             <Text style={[styles.emailText, {color: theme.primaryText }]}>Weight: {userData?.weightSystem === 'Imperial' ? `${(userData?.weight * 2.205).toFixed(2)} lbs` : `${userData?.weight} Kg`}</Text>
             <Text style={[styles.emailText, {color: theme.primaryText }]}>Email: {auth().currentUser?.email}</Text>
@@ -102,11 +136,17 @@ const SettingsScreen = () => {
           </View>
    
 
-        <TouchableOpacity
-            onPress={handleSignOut}
-            style={styles.button}
-            >
+            <TouchableOpacity
+                onPress={handleSignOut}
+                style={styles.button}
+                >
                 <Text  style={[styles.buttonText, {color: theme.btnText }]}>Sign Out</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                onPress={deleteAccount}
+                style={styles.buttonDel}
+                >
+                <Text  style={[styles.buttonText, {color: theme.btnText }]}>Terminate Account</Text>
             </TouchableOpacity>
     </View>
   )
@@ -125,7 +165,7 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         marginLeft: 30,
         marginTop: 30,
-        maxHeight: "70%",
+        maxHeight: "65%",
     },
     emailText: {
         fontSize: 20,
@@ -133,7 +173,7 @@ const styles = StyleSheet.create({
       },
       button: {
         backgroundColor: "deepskyblue",
-        width: "70%",
+        width: "60%",
         padding: 15,
         borderRadius: 10,
         alignItems: 'center',
@@ -155,6 +195,19 @@ const styles = StyleSheet.create({
         width: "90%",
         flexDirection: 'row',
         alignItems: 'center',
+      },
+      buttonDel:{
+        backgroundColor: "red",
+        width: "60%",
+        padding: 15,
+        borderRadius: 10,
+        alignItems: 'center',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        marginTop: 10
+      },
+      cancel:{
+        color: 'red'
       }
-  
+      
 })

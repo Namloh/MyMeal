@@ -60,35 +60,7 @@ const ProfileScreen = () => {
 
     <View style={styles.container}>
 
-      <View style={styles.itemContainer}>
-        {editingData.field === 'weight' ? (
-          // Show the input popup for weight if editingData.field is 'weight'
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={[styles.input, { color: theme.primaryText, backgroundColor: theme.background }]}
-              placeholder={`Enter weight`}
-              value={`${editingData.value}`}
-              onChangeText={text => setEditingData({ ...editingData, value: text })}
-              keyboardType="numeric"
-            />
-            <TouchableOpacity onPress={saveData} style={styles.editButton}>
-              <Text style={[styles.editButtonText, { color: theme.btnText }]}>Save</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          // Show the weight and "Edit" button if not in editing mode for weight
-          <View  style={styles.itemC}>
-            <Text style={[styles.label, { color: theme.primaryText }]}>Weight: {userData?.weightSystem === 'Imperial' ? `${(userData?.weight * 2.205).toFixed(2)} lbs` : `${userData?.weight} Kg`}</Text>
-            <TouchableOpacity
-              onPress={userData?.weightSystem === 'Imperial' ?  () => openEditor('weight', (userData?.weight*2.205).toFixed(2) || '') : () => openEditor('weight', userData?.weight || '')}
-              style={styles.editButton}
-            >
-              <Text style={[styles.editButtonText, { color: theme.btnText }]}>Edit</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
-
+      
       <View style={styles.itemContainer}>
   {editingData.field === 'name' ? (
     // Show the input popup for name if editingData.field is 'name'
@@ -118,18 +90,40 @@ const ProfileScreen = () => {
   )}
 </View>
 
-
-
-
-
-
-
+<View style={styles.itemContainer}>
+        {editingData.field === 'weight' ? (
+          // Show the input popup for weight if editingData.field is 'weight'
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={[styles.input, { color: theme.primaryText, backgroundColor: theme.background }]}
+              placeholder={`Enter weight`}
+              value={`${editingData.value}`}
+              onChangeText={text => setEditingData({ ...editingData, value: text })}
+              keyboardType="numeric"
+            />
+            <TouchableOpacity onPress={saveData} style={styles.editButton}>
+              <Text style={[styles.editButtonText, { color: theme.btnText }]}>Save</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          // Show the weight and "Edit" button if not in editing mode for weight
+          <View  style={styles.itemC}>
+            <Text style={[styles.label, { color: theme.primaryText }]}>Weight: {userData?.weightSystem === 'Imperial' ? `${(userData?.weight * 2.205).toFixed(2)} lbs` : `${userData?.weight} Kg`}</Text>
+            <TouchableOpacity
+              onPress={userData?.weightSystem === 'Imperial' ?  () => openEditor('weight', (userData?.weight*2.205).toFixed(2) || '') : () => openEditor('weight', userData?.weight || '')}
+              style={styles.editButton}
+            >
+              <Text style={[styles.editButtonText, { color: theme.btnText }]}>Edit</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
 
     </View>
   </View>
   </KeyboardAvoidingView>
   );
-};
+}; 
 
 export default ProfileScreen
 

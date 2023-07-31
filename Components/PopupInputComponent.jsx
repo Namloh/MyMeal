@@ -39,7 +39,13 @@ const PopupInputComponent = () => {
     const currentPopupType = popups[popups.length - 1];
     console.log(`Submitted ${currentPopupType}:`, inputValue);
 
-    saveDataToFirestore(currentPopupType, inputValue)
+    if(currentPopupType === 'weight' && inputValue === ''){
+      saveDataToFirestore(currentPopupType, "0")
+    }
+    else{
+      saveDataToFirestore(currentPopupType, inputValue)
+    }
+   
 
     removePopup();
     setInputValue('');

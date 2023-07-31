@@ -7,7 +7,7 @@ import { differenceInSeconds } from 'date-fns';
 import auth from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
-import { SocialIcon, Divider, Button  } from '@rneui/themed';
+import { SocialIcon, Divider, Button, Header  } from '@rneui/themed';
 
 
  
@@ -64,8 +64,8 @@ const LoginScreen = () => {
       if (user) {
         const creationTime = new Date(user.metadata.creationTime);
         const lastSignInTime = new Date(user.metadata.lastSignInTime);
-        console.log(creationTime)
-        console.log(lastSignInTime)
+        //console.log(creationTime)
+        //console.log(lastSignInTime)
         const thresholdSeconds = -5; // Set the threshold in seconds
     
         const timeDifference = differenceInSeconds(creationTime, lastSignInTime);
@@ -129,8 +129,17 @@ const LoginScreen = () => {
 
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior='padding' keyboardVerticalOffset={-400}>
+    <KeyboardAvoidingView style={styles.container} behavior='height' keyboardVerticalOffset={-400}>
+       <Header   
+        backgroundColor='transparent'
+        centerComponent={{ text: 'Welcome to MyMeal!', style: { color: 'deepskyblue', fontSize: 25, fontWeight: "700", width: "110%" } }}
+        containerStyle={{width: '120%', marginLeft: "auto", marginRight: 'auto'}}
+        placement='center'
+        barStyle='dark-content'
+      />
       <View style={styles.inputContainer}>
+
+     
 
         <TextInput
           placeholder='Email'
@@ -196,22 +205,23 @@ const LoginScreen = () => {
             />
 
 
-        <Divider  subHeaderStyle={{ color: 'deepskyblue', marginRight: 'auto', marginLeft: 'auto', fontWeight: '400', fontSize: 20, marginBottom: 10 }}  subHeader="Log in using socials" style={{width:"100%",marginTop:25, marginBottom: 5}} color='deepskyblue' width={1} inset={false} insetType="middle" />
+        <Divider  subHeaderStyle={{ color: 'deepskyblue', marginRight: 'auto', marginLeft: 'auto', fontWeight: '400', fontSize: 20, marginBottom: 10 }}  subHeader="Or using socials" style={{width:"100%",marginTop:25, marginBottom: 5}} color='deepskyblue' width={1} inset={false} insetType="middle" />
 
+        <View style={{flex:1, flexDirection: 'row'}}>
         <SocialIcon onPress={onGoogleButtonPress}
-      type='google'
-      title='Google'
-      iconSize={28}
-      loading={isLoadingGoogle} 
-    />
+            type='google'
+            title='Google'
+            iconSize={28}
+            loading={isLoadingGoogle} 
+          />
 
-<SocialIcon onPress={onFacebookButtonPress}
-      type='facebook'
-      title='Facebook'
-      iconSize={28}
-      loading={isLoadingGoogle} 
-    />
-      
+         <SocialIcon onPress={onFacebookButtonPress}
+            type='facebook'
+            title='Facebook'
+            iconSize={28}
+            loading={isLoadingGoogle} 
+          />
+      </View>
        
       </View>
 
@@ -230,6 +240,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        marginTop: 0
        
     },
     inputContainer: {

@@ -2,13 +2,14 @@ import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, Vi
 import React, {useEffect, useState}  from 'react'
 import auth from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native'
-import {  Divider, Button  } from '@rneui/themed';
+import {  Header, Button, Divider  } from '@rneui/themed';
 
 
 const RegisterScreen = () => {
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [passwordRepeat, setPasswordRepeat] = useState("")
     const [isLoadingRegister, setIsLoadingRegister] = useState(false);
    
     const navigation = useNavigation()
@@ -39,6 +40,15 @@ const RegisterScreen = () => {
         );
         return
       }
+      if(password !== passwordRepeat){
+        Alert.alert(
+          "Passwords must match",
+          "Try again...",
+          [{ text: "OK", onPress: () => {} }],
+          { cancelable: true }
+        );
+        return
+      }
       setIsLoadingRegister(true)
       auth().createUserWithEmailAndPassword(email,password)
       .then(userCredentials => 
@@ -53,20 +63,35 @@ const RegisterScreen = () => {
  
   return (
     <KeyboardAvoidingView style={styles.container} behavior='padding' keyboardVerticalOffset={-350}>
+       <Header   
+        backgroundColor='transparent'
+        centerComponent={{ text: 'Create an account!', style: { color: 'deepskyblue', fontSize: 25, fontWeight: "700", width: "100%" } }}
+        containerStyle={{width: 380}}
+        placement='center'
+        barStyle='dark-content'
+      />
     <View style={styles.inputContainer}>
 
       <TextInput
         placeholder='Email'
-        value={email }
+        value={email}
         onChangeText={text => setEmail(text)}
         style={styles.input}/>
 
       <TextInput
               placeholder='Password'
-              value={ password}
+              value={password}
               onChangeText={text => setPassword(text)}
               style={styles.input}
               secureTextEntry/>
+        <Divider style={{margin: 5}}    color='deepskyblue' width={1} inset={false} insetType="middle" />
+
+      <TextInput
+            placeholder='Repeat password'
+            value={passwordRepeat}
+            onChangeText={text => setPasswordRepeat(text)}
+            style={styles.input}
+            secureTextEntry/>
 
     </View>
 
