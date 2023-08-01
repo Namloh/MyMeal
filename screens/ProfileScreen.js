@@ -1,10 +1,11 @@
-import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View, StatusBar } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, StatusBar, View, Dimensions } from 'react-native'
 import React, {useState, useContext, useEffect} from 'react'
-import { collection, doc, setDoc, getDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, getDoc, serverTimestamp, addDoc, query, orderBy, getDocs  } from 'firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {db} from "../firebase"
 import { DarkModeContext } from '../DarkModeProvider/DarkModeProvider';
 import { useFocusEffect } from '@react-navigation/native';
+import WeightChart from '../Components/WeightChart';
 
 
 const ProfileScreen = () => {
@@ -13,18 +14,40 @@ const ProfileScreen = () => {
     field: '',
     value: '',
   });
+  const [weightEntries, setWeightEntries] = useState([]);
 
   const statusBarHeight = StatusBar.currentHeight || 0;
  
-
   const resetEditingData = () => {
     setEditingData({ field: '', value: '' });
+  }; 
+
+  const getUserWeightEntries = async (userId) => {
+    try {
+      const weightRef = collection(db, 'users', userId, 'weightEntries');
+      const weightQuery = query(weightRef, orderBy('timestamp', 'asc'));
+      const snapshot = await getDocs(weightQuery);
+      const weightEntries = snapshot.docs.map((doc) => doc.data());
+      return weightEntries;
+    } catch (error) {
+      console.error('Error getting weight entries:', error);
+      return [];
+    }
   };
 
+  const userId = auth().currentUser.uid;; // Replace with the actual user ID
+
+  const fetchWeightEntries = async () => {
+   
+    const entries = await getUserWeightEntries(userId);
+    setWeightEntries(entries);
+
+  };
 
   useFocusEffect(React.useCallback(() => {
     fetchUserData();
-     resetEditingData();
+    resetEditingData();
+    fetchWeightEntries();
   }, []));
 
   const openEditor = (field, value) => {
@@ -36,9 +59,14 @@ const ProfileScreen = () => {
       if(userData?.weightSystem === 'Imperial' && editingData.field === 'weight'){
         await saveDataToFirestore(editingData.field, (parseFloat(editingData.value)/2.205).toFixed(2));
       }
-     else{
-      await saveDataToFirestore(editingData.field, editingData.value);
-     }
+      else{
+        await saveDataToFirestore(editingData.field, editingData.value);
+      }
+      if(editingData.field === 'weight'){
+        const userId = auth().currentUser.uid;
+        addWeightEntry(userId, editingData.value)
+      }
+     
       setEditingData({ field: '', value: '' });
       await fetchUserData(); // Await the fetchUserData function after saving the data
     } catch (error) {
@@ -46,20 +74,33 @@ const ProfileScreen = () => {
     }
   };
 
-
-
+  const addWeightEntry = async (userId, weight) => {
+    try {
+      const weightRef = collection(db, 'users', userId, 'weightEntries');
+      const newEntry = {
+        weight: weight,
+        timestamp: serverTimestamp(), // Use serverTimestamp to get the server time
+      };
+      await addDoc(weightRef, newEntry);
+      console.log('Weight entry added successfully.');
+    
+    } catch (error) {
+      console.error('Error adding weight entry:', error);
+    }
+  };
+  
+ 
   return (
     <KeyboardAvoidingView
     style={{ flex: 1, backgroundColor: theme.background }}
-    behavior={'padding'}
+    behavior={'padding'}>
 
-  
-  >
     <View style={{ minHeight: '100%', backgroundColor: theme.background , paddingTop: statusBarHeight}}>
     <Text style={[styles.header, { color: theme.primaryText }]}>My Profile</Text>
 
     <View style={styles.container}>
 
+   
       
       <View style={styles.itemContainer}>
   {editingData.field === 'name' ? (
@@ -118,9 +159,12 @@ const ProfileScreen = () => {
           </View>
         )}
       </View>
+   
 
     </View>
+    <WeightChart style={styles.chart} weightEntries={weightEntries} weightSystem={userData?.weightSystem}/>
   </View>
+  
   </KeyboardAvoidingView>
   );
 }; 
@@ -207,5 +251,6 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         marginTop: 10,
       },
+   
       
 })

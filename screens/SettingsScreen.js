@@ -75,7 +75,6 @@ const SettingsScreen = () => {
   
 
   useEffect(() => {
-    console.log(selectedIndex);
     toggleWeightSystem()
   }, [selectedIndex]);  
 
