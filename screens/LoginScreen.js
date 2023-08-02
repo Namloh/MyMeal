@@ -69,7 +69,7 @@ const LoginScreen = () => {
         const thresholdSeconds = -5; // Set the threshold in seconds
     
         const timeDifference = differenceInSeconds(creationTime, lastSignInTime);
-        console.log(timeDifference)
+        //console.log(timeDifference)
         if (timeDifference >= thresholdSeconds) {
           console.log("User is signing in with Google for the first time!");
           navigation.replace("Welcome");

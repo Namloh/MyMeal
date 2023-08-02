@@ -85,15 +85,16 @@ export const DarkModeProvider = ({ children }) => {
     return () => unsubscribe(); // Cleanup the listener when the component unmounts
   }, []);
 
-
+ 
 
   const toggleDarkMode = async () => { 
     try {     
         setDarkMode((prev) => !prev);
+       
+        await saveDataToFirestore('darkMode', !darkMode);
         StatusBar.setBarStyle(!darkMode ? 'light-content' : 'dark-content', true);
         StatusBar.setTranslucent(true);
         StatusBar.setBackgroundColor(!darkMode ? 'black' : 'white');
-        await saveDataToFirestore('darkMode', !darkMode);
       } catch (error) {
         console.error('Error toggling dark mode:', error);
       }

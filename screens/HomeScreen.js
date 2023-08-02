@@ -9,6 +9,7 @@ import MyMealScreen from './MyMealScreen';
 import ProfileScreen from './ProfileScreen';
 import { DarkModeContext } from '../DarkModeProvider/DarkModeProvider';
 import WelcomeScreen from './WelcomeScreen';
+import WeightEntriesScreen from './WeightEntriesScreen';
 
 const HomeScreen = () => {
   const { theme } = useContext(DarkModeContext);
@@ -61,6 +62,7 @@ const HomeScreen = () => {
      <Tab.Screen name="MyMeal"  component={MyMealScreen} />
      <Tab.Screen name="Profile" component={ProfileScreen} />
      <Tab.Screen name="Settings" component={SettingsScreen} />
+    
   </Tab.Navigator>
 
    

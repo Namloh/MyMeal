@@ -10,6 +10,7 @@ import { NativeBaseProvider} from "native-base";
 import { auth } from './firebase';
 import WelcomeScreen from './screens/WelcomeScreen';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import WeightEntriesScreen from './screens/WeightEntriesScreen';
 
 GoogleSignin.configure({
   webClientId: '958515273725-l6pk32nvagpp8gvdhnolq8sc0su40qt4.apps.googleusercontent.com',
@@ -33,7 +34,7 @@ export default function App() {
                <Stack.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} />
                <Stack.Screen options={{ headerShown: false }} name="Welcome" component={WelcomeScreen} />
 
-
+               <Stack.Screen options={{ headerShown: true, headerTitle: 'Weight Entries' }}  name="WeightEntriesScreen" component={WeightEntriesScreen} />
           </Stack.Navigator>
           </DarkModeProvider>
         </NavigationContainer>

@@ -6,7 +6,7 @@ import {db} from "../firebase"
 import { DarkModeContext } from '../DarkModeProvider/DarkModeProvider';
 import { useFocusEffect } from '@react-navigation/native';
 import WeightChart from '../Components/WeightChart';
-
+import { useNavigation } from '@react-navigation/native'
 
 const ProfileScreen = () => {
   const { darkMode, toggleDarkMode, theme, fetchUserData, saveDataToFirestore, userData } = useContext(DarkModeContext);
@@ -15,6 +15,7 @@ const ProfileScreen = () => {
     value: '',
   });
   const [weightEntries, setWeightEntries] = useState([]);
+  const navigation = useNavigation()
 
   const statusBarHeight = StatusBar.currentHeight || 0;
  
@@ -31,7 +32,7 @@ const ProfileScreen = () => {
       return weightEntries;
     } catch (error) {
       console.error('Error getting weight entries:', error);
-      return [];
+      return []; 
     }
   };
 
@@ -41,11 +42,12 @@ const ProfileScreen = () => {
    
     const entries = await getUserWeightEntries(userId);
     setWeightEntries(entries);
+    console.log('mam je')
 
   };
 
   useFocusEffect(React.useCallback(() => {
-    fetchUserData();
+    //fetchUserData();
     resetEditingData();
     fetchWeightEntries();
   }, []));
@@ -159,10 +161,24 @@ const ProfileScreen = () => {
           </View>
         )}
       </View>
+
+
+      
+     
+     
    
 
     </View>
-    <WeightChart style={styles.chart} weightEntries={weightEntries} weightSystem={userData?.weightSystem}/>
+    
+          <WeightChart style={styles.chart} weightEntries={weightEntries} weightSystem={userData?.weightSystem}/>
+        
+            <TouchableOpacity
+              onPress={() => navigation.navigate("WeightEntriesScreen", { weightEntries })}
+              style={[styles.editButton, {width: 200, marginLeft: 'auto', marginRight: 'auto', marginBottom: '20%'}]}
+            >
+              <Text style={[styles.editButtonText, { color: theme.btnText }]}>Edit Weight Entries</Text>
+            </TouchableOpacity>
+       
   </View>
   
   </KeyboardAvoidingView>
@@ -251,6 +267,6 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         marginTop: 10,
       },
-   
+
       
 })

@@ -34,7 +34,7 @@ const WeightChart = ({ weightEntries, weightSystem  }) => {
  }
  else{
     return (
-        <View style={{ flex: 1, backgroundColor: theme.background, marginTop: "85%"}}>
+        <View style={{ flex: 1, backgroundColor: theme.background, marginTop: "70%"}}>
             <Text style={{color: theme.primaryText, marginLeft: 'auto', marginRight: 'auto', fontSize: 20}}>Your Progress Over Time</Text>
             <Divider  style={{width:"80%",marginTop:2, marginBottom: 5, marginLeft: 'auto', marginRight: 'auto'}} color='deepskyblue' width={2} inset={false} insetType="middle" />
           <LineChart
