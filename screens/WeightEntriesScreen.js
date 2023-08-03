@@ -11,125 +11,130 @@ import { Button } from '@rneui/themed';
 
 const WeightEntriesScreen = ({ route }) => {
   const { darkMode, toggleDarkMode, theme, fetchUserData, saveDataToFirestore, userData } = useContext(DarkModeContext);
-  const [weightEntries, setWeightEntries] = useState([])
-  
-  const [weightDataByDay, setWeightDataByDay] = useState([])
-  const [markedDates, setMarkedDates] = useState({})
-  const [prevSelectedDay, setPrevSelectedDay] = useState(null); // Keep track of the previously selected day
-  const [loadingStatus, setLoadingStatus] = useState({});
-  
+  const [weightEntriesDb, setWeightEntriesDb] = useState([]);
 
-  const [selectedDay, setSelectedDay] = useState(today);
+  const [weightEntries, setWeightEntries] = useState(route.params?.weightEntries || []);
+
+  const [markedDates, setMarkedDates] = useState({})
   const [selectedDayEntries, setSelectedDayEntries] = useState([]);
   const [noEntriesMessage, setNoEntriesMessage] = useState('');
+  const [loadingStatus, setLoadingStatus] = useState({});
+  
+  const [weightDataByDay, setWeightDataByDay] = useState([])
+
+  const [prevSelectedDay, setPrevSelectedDay] = useState(null); // Keep track of the previously selected day
+
+
+
+
+  const [selectedDay, setSelectedDay] = useState(today);
+
+
+  
+  useEffect(() => {
+    // Update marked dates and calendar theme based on weight entries
+    const markedDatesData = {};
+    weightEntries.forEach((entry) => {
+      const date = entry.timestamp.toDate().toISOString().split('T')[0];
+      markedDatesData[date] = {
+        marked: true,
+        dotColor: 'deepskyblue',
+        selectedDotColor: 'white', 
+      };
+    });
+
+    // Update the marked dates with the data and set the selected day
+    setMarkedDates({ ...markedDatesData, [selectedDay]: { selected: true } });
+
+    // Filter weight entries for the selected day
+    const entriesForSelectedDay = weightEntries.filter(
+      (entry) => entry.timestamp.toDate().toISOString().split('T')[0] === selectedDay
+    );
+
+    setSelectedDayEntries(entriesForSelectedDay);
+
+    // You can also set the noEntriesMessage state based on whether there are entries or not.
+    // Example:
+    if (entriesForSelectedDay.length === 0) {
+      setNoEntriesMessage('No entries for the selected day.');
+    } else {
+      setNoEntriesMessage('');
+    }
+  }, [weightEntries, selectedDay]);
 
   const handleDayPress = (day) => {
-    const date = day.dateString;
-    setSelectedDay(date); // Update the selected day separately
-    const entries = weightDataByDay[date] || [];
-    setSelectedDayEntries(entries);
-
-    // Set the message based on the number of entries
-    if (entries.length === 0) {
-      setNoEntriesMessage('No entries for this day');
-    } else {
-      setNoEntriesMessage(''); 
-    }
-
-    const updatedMarkedDates = {
-      ...markedDates,
-      [date]: {
-        ...markedDates[date],
-        selected: true, // Set this to true to highlight the selected day
-        selectedTextColor: 'white',
-        selectedColor: 'deepskyblue',
-      },
-    };
-    if (prevSelectedDay && prevSelectedDay !== date) {
-      updatedMarkedDates[prevSelectedDay] = {
-        ...markedDates[prevSelectedDay],
-        selected: false, // Set this to false to remove the highlight from the previous day
-        selectedColor: undefined, 
-      };
-    }
-
-    setMarkedDates(updatedMarkedDates);
-    setPrevSelectedDay(date)
-  };
-
-  // Get today's date in the format "YYYY-MM-DD"
-  const today = new Date().toISOString().split('T')[0];
-  const userId = auth().currentUser.uid; // Replace with the actual user ID
-
-
-  const loadWeightEntries = async () => {
-    try {
-      const weightEntries = await getWeightEntriesFromDatabase();
-
-      setWeightEntries(weightEntries);
-
-      // Calculate weightDataByDay using the latest weightEntries data
-      const updatedWeightDataByDay = weightEntries.reduce((data, entry) => {
-        const date = entry.timestamp.toDate().toISOString().split('T')[0];
-        if (!data[date]) {
-          data[date] = [];
-        }
-        data[date].push(entry);
-        return data;
-      }, {});
-      setWeightDataByDay(updatedWeightDataByDay);
-
-      updateMarkedDates(updatedWeightDataByDay);
-      // After loading entries, update the selected day entries
-      const entries = updatedWeightDataByDay[selectedDay] || [];
-      setSelectedDayEntries(entries);
-
-    } catch (error) {
-      // Handle the error, if any
-      console.error('Error loading weight entries:', error);
-    }
-  };
-
-
-  const getWeightEntriesFromDatabase = async () => {
-    try {
-      const weightRef = collection(db, 'users', userId, 'weightEntries');
-      const weightQuery = query(weightRef, orderBy('timestamp', 'asc'));
-      const querySnapshot = await getDocs(weightQuery);
-      const weightEntries = querySnapshot.docs.map((doc) => {
-        return { id: doc.id, ...doc.data() };
-      });
-      setWeightEntries(weightEntries);
-
-      // Calculate weightDataByDay using the latest weightEntries data
-      const updatedWeightDataByDay = weightEntries.reduce((data, entry) => {
-        const date = entry.timestamp.toDate().toISOString().split('T')[0];
-        if (!data[date]) {
-          data[date] = [];
-        }
-        data[date].push(entry);
-        return data;
-      }, {});
-      setWeightDataByDay(updatedWeightDataByDay);
-
-      // Update the markedDates state based on the weightDataByDay
-      const updatedMarkedDates = {
-        ...Object.keys(updatedWeightDataByDay).reduce((dates, date) => {
-          dates[date] = { marked: true, selectedTextColor: 'white' };
-          return dates;
-        }, {}),
-      
-      };
-      setMarkedDates(updatedMarkedDates);
-      return weightEntries
-    } catch (error) {
-      console.error('Error getting weight entries:', error);
-    }
+    const selectedDate = day.dateString;
+    setSelectedDay(selectedDate);
   };
 
   useEffect(() => {
-    loadWeightEntries()
-  }, []);
+    // Update selectedDayEntries with weight entries for today from route.params.weightEntries
+    const entriesForToday = route.params?.weightEntries?.filter(
+      (entry) => entry.timestamp.toDate().toISOString().split('T')[0] === today
+    );
+
+
+    setSelectedDayEntries(entriesForToday);
+    setSelectedDay(today);
+    // You can also set the noEntriesMessage state based on whether there are entries or not.
+    // Example:
+    if (entriesForToday.length === 0) {
+      setNoEntriesMessage('No entries for today.');
+    } else {
+      setNoEntriesMessage('');
+    }
+
+  }, [route.params, today]);
+
+
+
+
+
+
+//REMOVINGGGGGGGGGGGGGGGGGGGGGGGREMOVINGGGGGGGGGGGGGGGGGGGGGGGREMOVINGGGGGGGGGGGGGGGGGGGGGGGREMOVINGGGGGGGGGGGGGGGGGGGGGGG
+
+const handleRemoveEntryFromDatabase = async (entryId) => {
+  try {
+    setLoadingStatus((prevLoadingStatus) => ({
+      ...prevLoadingStatus,
+      [entryId]: true,
+    }));
+    const entryRef = doc(db, 'users', userId, 'weightEntries', entryId);
+    await deleteDoc(entryRef);
+    console.log('Weight entry deleted successfully.');
+
+    const updatedWeightEntries = await getUserWeightEntries(userId);
+    setWeightEntries(updatedWeightEntries);
+
+    setLoadingStatus((prevLoadingStatus) => ({
+      ...prevLoadingStatus,
+      [entryId]: false,
+    }));
+  } catch (error) {
+    console.error('Error deleting weight entry:', error);
+    setLoadingStatus((prevLoadingStatus) => ({
+      ...prevLoadingStatus,
+      [entryId]: false,
+    }));
+  }
+};
+
+
+const getUserWeightEntries = async (userId) => {
+  try {
+    const weightRef = collection(db, 'users', userId, 'weightEntries');
+    const weightQuery = query(weightRef, orderBy('timestamp', 'asc'));
+    const snapshot = await getDocs(weightQuery);
+    const weightEntries = snapshot.docs.map((doc) => ({
+      entryId: doc.id, // Include the entryId in the data
+      ...doc.data(),
+    }));
+    return weightEntries;
+  } catch (error) {
+    console.error('Error getting weight entries:', error);
+    return []; 
+  }
+};
 
 
   const calendarTheme = {
@@ -137,12 +142,12 @@ const WeightEntriesScreen = ({ route }) => {
     calendarBackground: theme.background,
     textSectionTitleColor: theme.primaryText,
     selectedDayBackgroundColor: 'deepskyblue',
-    selectedDayTextColor: 'deepskyblue',
+    selectedDayTextColor: 'white', 
     todayTextColor: 'deepskyblue',
     dayTextColor: theme.primaryText,
     textDisabledColor: theme.primaryText,
     dotColor: 'deepskyblue',
-    selectedDotColor: theme.background,
+    selectedDotColor: 'white', 
     arrowColor: 'deepskyblue',
     monthTextColor: theme.primaryText,
     indicatorColor: 'deepskyblue',
@@ -158,58 +163,8 @@ const WeightEntriesScreen = ({ route }) => {
    
   };
 
-
-  const handleRemoveEntryFromDatabase = async (entryId) => {
-    try {
-      setLoadingStatus((prevLoadingStatus) => ({
-        ...prevLoadingStatus,
-        [entryId]: true,
-      }));
-      const entryRef = doc(db, 'users', userId, 'weightEntries', entryId);
-      await deleteDoc(entryRef);
-      console.log('Weight entry deleted successfully.');
-      await loadWeightEntries();
-      setLoadingStatus((prevLoadingStatus) => ({
-        ...prevLoadingStatus,
-        [entryId]: false,
-      }));
-    } catch (error) {
-      console.error('Error deleting weight entry:', error);
-      setLoadingStatus((prevLoadingStatus) => ({
-        ...prevLoadingStatus,
-        [entryId]: false,
-      }));
-    }
-  };
-  
- 
-  const updateUserWeight = () => {
-    const latestEntry = weightEntries.length > 0 ? weightEntries[weightEntries.length - 1] : null;
-
-    if (latestEntry) {
-      const userWeight = latestEntry.weight;
-      
-      saveDataToFirestore("weight", userWeight)
-    } else {
-
-    }
-  };
-  useEffect(() => {
-    // Whenever weightEntries changes, update the user's weight
-    updateUserWeight();
-  }, [weightEntries]);
-
-
-
-  const updateMarkedDates = (dataByDay) => {
-    const updatedMarkedDates = {
-      ...Object.keys(dataByDay).reduce((dates, date) => {
-        dates[date] = { marked: true, selectedTextColor: 'white' };
-        return dates;
-      }, {}),
-    };
-    setMarkedDates(updatedMarkedDates);
-  };
+  const today = new Date().toISOString().split('T')[0];
+  const userId = auth().currentUser.uid; // Replace with the actual user ID
   return (
     <View style={{ minHeight: '100%', backgroundColor: theme.background }}>
     <View style={styles.container}>
@@ -237,8 +192,8 @@ const WeightEntriesScreen = ({ route }) => {
               </TouchableOpacity>
               <Button
                 color="red"
-                onPress={() => handleRemoveEntryFromDatabase(item.id)}
-                loading={loadingStatus[item.id]}
+                onPress={() => handleRemoveEntryFromDatabase(item.entryId)}
+                loading={loadingStatus[item.entryId]}
                 buttonStyle={{width: 80}}
               >
                 Remove

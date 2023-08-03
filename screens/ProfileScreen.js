@@ -28,7 +28,10 @@ const ProfileScreen = () => {
       const weightRef = collection(db, 'users', userId, 'weightEntries');
       const weightQuery = query(weightRef, orderBy('timestamp', 'asc'));
       const snapshot = await getDocs(weightQuery);
-      const weightEntries = snapshot.docs.map((doc) => doc.data());
+      const weightEntries = snapshot.docs.map((doc) => ({
+        entryId: doc.id, // Include the entryId in the data
+        ...doc.data(),
+      }));
       return weightEntries;
     } catch (error) {
       console.error('Error getting weight entries:', error);
@@ -67,6 +70,7 @@ const ProfileScreen = () => {
       if(editingData.field === 'weight'){
         const userId = auth().currentUser.uid;
         addWeightEntry(userId, editingData.value)
+        fetchWeightEntries();
       }
      
       setEditingData({ field: '', value: '' });

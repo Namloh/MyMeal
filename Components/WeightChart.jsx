@@ -33,6 +33,7 @@ const WeightChart = ({ weightEntries, weightSystem  }) => {
       );
  }
  else{
+ 
     return (
         <View style={{ flex: 1, backgroundColor: theme.background, marginTop: "70%"}}>
             <Text style={{color: theme.primaryText, marginLeft: 'auto', marginRight: 'auto', fontSize: 20}}>Your Progress Over Time</Text>
