@@ -11,15 +11,16 @@ import { auth } from './firebase';
 import WelcomeScreen from './screens/WelcomeScreen';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import WeightEntriesScreen from './screens/WeightEntriesScreen';
+import { DarkModeContext } from './DarkModeProvider/DarkModeProvider';
 
 GoogleSignin.configure({
   webClientId: '958515273725-l6pk32nvagpp8gvdhnolq8sc0su40qt4.apps.googleusercontent.com',
 });
 const Stack = createNativeStackNavigator();
 
-
 export default function App() {
-  
+  const { darkMode, toggleDarkMode, theme, fetchUserData, saveDataToFirestore, userData } = useContext(DarkModeContext);
+
   return (
 
         <NativeBaseProvider >
@@ -34,7 +35,7 @@ export default function App() {
                <Stack.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} />
                <Stack.Screen options={{ headerShown: false }} name="Welcome" component={WelcomeScreen} />
 
-               <Stack.Screen options={{ headerShown: true, headerTitle: 'Weight Entries' }}  name="WeightEntriesScreen" component={WeightEntriesScreen} />
+               <Stack.Screen options={{ headerShown: true, headerTitle: 'Weight Entries', headerStyle:{backgroundColor: 'deepskyblue'}, headerTintColor: 'white' }}  name="WeightEntriesScreen" component={WeightEntriesScreen} />
           </Stack.Navigator>
           </DarkModeProvider>
         </NavigationContainer>

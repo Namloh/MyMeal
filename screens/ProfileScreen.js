@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, StatusBar, View, Dimensions } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, StatusBar, View, Dimensions, ScrollView } from 'react-native'
 import React, {useState, useContext, useEffect} from 'react'
 import { collection, doc, setDoc, getDoc, serverTimestamp, addDoc, query, orderBy, getDocs  } from 'firebase/firestore';
 import auth from '@react-native-firebase/auth';
@@ -7,18 +7,23 @@ import { DarkModeContext } from '../DarkModeProvider/DarkModeProvider';
 import { useFocusEffect } from '@react-navigation/native';
 import WeightChart from '../Components/WeightChart';
 import { useNavigation } from '@react-navigation/native'
+import { Dialog, Button, Icon  } from '@rneui/themed';
 
 const ProfileScreen = () => {
   const { darkMode, toggleDarkMode, theme, fetchUserData, saveDataToFirestore, userData } = useContext(DarkModeContext);
   const [editingData, setEditingData] = useState({
     field: '',
     value: '',
-  });
+  }); 
   const [weightEntries, setWeightEntries] = useState([]);
   const navigation = useNavigation()
 
-  const statusBarHeight = StatusBar.currentHeight || 0;
+  const [visibleWeight, setVisibleWeight] = useState(false); 
+  const [refreshLoad, setRefreshLoad] = useState(false); 
  
+  const statusBarHeight = StatusBar.currentHeight || 0;
+  
+
   const resetEditingData = () => {
     setEditingData({ field: '', value: '' });
   }; 
@@ -45,20 +50,30 @@ const ProfileScreen = () => {
    
     const entries = await getUserWeightEntries(userId);
     setWeightEntries(entries);
-    console.log('mam je')
 
+    setRefreshLoad(false)
   };
 
+  const refreshData = async () => { 
+    setRefreshLoad(true)
+    fetchWeightEntries()
+    fetchUserData()
+  };
+
+  useEffect(() => {
+    fetchWeightEntries();
+  }, []);
   useFocusEffect(React.useCallback(() => {
     //fetchUserData();
     resetEditingData();
-    fetchWeightEntries();
+    //fetchWeightEntries();
   }, []));
 
   const openEditor = (field, value) => {
     setEditingData({ field, value });
+    setVisibleWeight(true)
   };
-
+ 
   const saveData = async () => {
     try {
       if(userData?.weightSystem === 'Imperial' && editingData.field === 'weight'){
@@ -69,12 +84,13 @@ const ProfileScreen = () => {
       }
       if(editingData.field === 'weight'){
         const userId = auth().currentUser.uid;
-        addWeightEntry(userId, editingData.value)
-        fetchWeightEntries();
+        await addWeightEntry(userId, editingData.value)
+        refreshData() 
       }
      
       setEditingData({ field: '', value: '' });
-      await fetchUserData(); // Await the fetchUserData function after saving the data
+      await fetchUserData();
+      setVisibleWeight(false) 
     } catch (error) {
       console.error('Error saving data:', error);
     }
@@ -95,12 +111,11 @@ const ProfileScreen = () => {
     }
   };
   
+
  
   return (
-    <KeyboardAvoidingView
-    style={{ flex: 1, backgroundColor: theme.background }}
-    behavior={'padding'}>
 
+<ScrollView>
     <View style={{ minHeight: '100%', backgroundColor: theme.background , paddingTop: statusBarHeight}}>
     <Text style={[styles.header, { color: theme.primaryText }]}>My Profile</Text>
 
@@ -109,8 +124,8 @@ const ProfileScreen = () => {
    
       
       <View style={styles.itemContainer}>
-  {editingData.field === 'name' ? (
-    // Show the input popup for name if editingData.field is 'name'
+
+     {/*
     <View style={styles.inputContainer}>
       <TextInput
         style={[styles.input, { color: theme.primaryText, backgroundColor: theme.background }]}
@@ -123,8 +138,7 @@ const ProfileScreen = () => {
         <Text style={[styles.editButtonText, { color: theme.btnText }]}>Save</Text>
       </TouchableOpacity>
     </View>
-  ) : (
-    // Show the name and "Edit" button if not in editing mode for name
+  */}
     <View style={styles.itemC}>
       <Text style={[styles.label, { color: theme.primaryText }]}>Name: {userData?.name}</Text>
       <TouchableOpacity
@@ -134,12 +148,39 @@ const ProfileScreen = () => {
         <Text style={[styles.editButtonText, { color: theme.btnText }]}>Edit</Text>
       </TouchableOpacity>
     </View>
-  )}
+
 </View>
 
 <View style={styles.itemContainer}>
-        {editingData.field === 'weight' ? (
-          // Show the input popup for weight if editingData.field is 'weight'
+    
+          
+      <Dialog
+      isVisible={visibleWeight}
+      onBackdropPress={() => {setVisibleWeight(false)}}
+          
+    overlayStyle={{backgroundColor: theme.background, borderColor: theme.primaryText, borderWidth: 2}}
+    >
+      <Dialog.Title titleStyle={{color: theme.primaryText}} title="Select Preference"/>
+      <TextInput
+              style={[styles.input, {borderColor: theme.primaryText, maxWidth: '100%'}]}
+              placeholder={`Enter weight`}
+              value={`${editingData.value}`}
+              onChangeText={text => setEditingData({ ...editingData, value: text })}
+              keyboardType="numeric"
+            />
+
+      <Dialog.Actions>
+        <Dialog.Button
+          title="SAVE"
+          onPress={
+            saveData
+          }
+        />
+        <Dialog.Button title="CANCEL" onPress={() => {setVisibleWeight(false)}} />
+      </Dialog.Actions>
+    </Dialog>
+     
+    {/* 
           <View style={styles.inputContainer}>
             <TextInput
               style={[styles.input, { color: theme.primaryText, backgroundColor: theme.background }]}
@@ -152,8 +193,9 @@ const ProfileScreen = () => {
               <Text style={[styles.editButtonText, { color: theme.btnText }]}>Save</Text>
             </TouchableOpacity>
           </View>
-        ) : (
-          // Show the weight and "Edit" button if not in editing mode for weight
+  */ }
+   
+      
           <View  style={styles.itemC}>
             <Text style={[styles.label, { color: theme.primaryText }]}>Weight: {userData?.weightSystem === 'Imperial' ? `${(userData?.weight * 2.205).toFixed(2)} lbs` : `${userData?.weight} Kg`}</Text>
             <TouchableOpacity
@@ -163,29 +205,46 @@ const ProfileScreen = () => {
               <Text style={[styles.editButtonText, { color: theme.btnText }]}>Edit</Text>
             </TouchableOpacity>
           </View>
-        )}
+
       </View>
 
 
       
-     
-     
    
 
     </View>
-    
-          <WeightChart style={styles.chart} weightEntries={weightEntries} weightSystem={userData?.weightSystem}/>
-        
+    <View style={{ flex: 1, position: 'relative', marginTop: "65%" }}>
+        <Icon
+        type="material"
+        name="refresh"
+        size={20}
+        color={'deepskyblue'}
+        onPress={() => {
+          refreshData()
+        }}
+        iconStyle={{color: theme.background}}
+        disabled={refreshLoad}
+        reverse={true}
+        containerStyle={{
+          padding: 0,
+          position: 'absolute',
+          top: -10,
+          right: 20,
+          zIndex: 1,
+        }}
+      />
+        <WeightChart style={styles.chart} weightEntries={weightEntries} weightSystem={userData?.weightSystem}/>
+            
             <TouchableOpacity
               onPress={() => navigation.navigate("WeightEntriesScreen", { weightEntries })}
-              style={[styles.editButton, {width: 200, marginLeft: 'auto', marginRight: 'auto', marginBottom: '20%'}]}
+              style={[styles.editButton, {width: 200, marginLeft: 'auto', marginRight: 'auto', marginBottom: '20%', marginTop: 20}]}
             >
               <Text style={[styles.editButtonText, { color: theme.btnText }]}>Edit Weight Entries</Text>
             </TouchableOpacity>
-       
+        </View>
   </View>
-  
-  </KeyboardAvoidingView>
+  </ScrollView>
+ 
   );
 }; 
 
@@ -248,8 +307,8 @@ const styles = StyleSheet.create({
       borderColor: 'deepskyblue',
       borderWidth: 2,
       marginTop: 5,
-      fontSize: 20,
-      maxWidth: 200,
+      fontSize: 18,
+      maxWidth: '100%',
     },
     buttonContainer: {
       width: "60%",

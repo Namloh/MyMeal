@@ -53,8 +53,6 @@ const WeightEntriesScreen = ({ route }) => {
 
     setSelectedDayEntries(entriesForSelectedDay);
 
-    // You can also set the noEntriesMessage state based on whether there are entries or not.
-    // Example:
     if (entriesForSelectedDay.length === 0) {
       setNoEntriesMessage('No entries for the selected day.');
     } else {
@@ -69,19 +67,27 @@ const WeightEntriesScreen = ({ route }) => {
 
   useEffect(() => {
     // Update selectedDayEntries with weight entries for today from route.params.weightEntries
-    const entriesForToday = route.params?.weightEntries?.filter(
-      (entry) => entry.timestamp.toDate().toISOString().split('T')[0] === today
-    );
+    
+    if (route.params?.weightEntries) {
+      const entriesForToday = route.params.weightEntries.filter(
+        (entry) => entry.timestamp.toDate().toISOString().split('T')[0] === today
+      );
 
+      setSelectedDayEntries(entriesForToday);
+      setSelectedDay(today);
 
-    setSelectedDayEntries(entriesForToday);
-    setSelectedDay(today);
-    // You can also set the noEntriesMessage state based on whether there are entries or not.
-    // Example:
-    if (entriesForToday.length === 0) {
-      setNoEntriesMessage('No entries for today.');
+      // You can also set the noEntriesMessage state based on whether there are entries or not.
+      // Example:
+      if (entriesForToday.length === 0) {
+        setNoEntriesMessage('No entries for today.');
+      } else {
+        setNoEntriesMessage('');
+      }
     } else {
-      setNoEntriesMessage('');
+      // Handle the case when route.params.weightEntries is not available or null
+      setSelectedDayEntries([]);
+      setSelectedDay(today);
+      setNoEntriesMessage('No weight entries available.');
     }
 
   }, [route.params, today]);
@@ -106,6 +112,9 @@ const handleRemoveEntryFromDatabase = async (entryId) => {
     const updatedWeightEntries = await getUserWeightEntries(userId);
     setWeightEntries(updatedWeightEntries);
 
+    const latestWeightEntry = updatedWeightEntries[updatedWeightEntries.length - 1];
+    console.log(latestWeightEntry)
+    saveDataToFirestore('weight', latestWeightEntry.weight)
     setLoadingStatus((prevLoadingStatus) => ({
       ...prevLoadingStatus,
       [entryId]: false,
@@ -187,7 +196,7 @@ const getUserWeightEntries = async (userId) => {
           renderItem={({ item }) => (
             <View style={{ flex: 1,alignItems: 'center', flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: 'lightgray'}}>
               <TouchableOpacity style={styles.entryItem}>
-                <Text style={styles.entryWeight}>{`${item.weight} kg`}</Text>
+                <Text style={[styles.entryWeight, {color: theme.primaryText}]}>{`${item.weight} kg`}</Text>
                 <Text style={styles.entryTime}>{item.timestamp.toDate().toLocaleTimeString()}</Text>
               </TouchableOpacity>
               <Button

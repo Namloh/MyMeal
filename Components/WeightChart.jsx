@@ -7,12 +7,24 @@ import { Divider, Text } from '@rneui/themed';
 const WeightChart = ({ weightEntries, weightSystem  }) => {
   const { theme } = useContext(DarkModeContext);
 
+
+ if(weightEntries.length === 0){
+ 
+    return (
+        <View style={{ flex: 1, backgroundColor: theme.background}}>
+            <Text style={{color: theme.primaryText, marginLeft: 'auto', marginRight: 'auto'}}>No data to graph</Text>
+        </View>
+      );
+ }
+ else{
   const chartData = {
-    labels: weightEntries.map((entry) => {
-        const date = entry.timestamp.toDate();
-        const options = { day: 'numeric', month: 'short' };
-        return date.toLocaleString('en-US', options);
-      }),
+    labels: weightEntries
+    .filter((entry) => entry.timestamp && entry.timestamp.toDate) // Filter out entries without valid timestamp
+    .map((entry) => {
+      const date = entry.timestamp.toDate();
+      const options = { day: 'numeric', month: 'short' };
+      return date.toLocaleString('en-US', options);
+    }),
       datasets: [
         {
             data: weightEntries.map((entry) =>
@@ -23,19 +35,8 @@ const WeightChart = ({ weightEntries, weightSystem  }) => {
         },
       ],
     };
-    
-    
- if(chartData.labels.length === 0){
     return (
-        <View style={{ flex: 1, backgroundColor: theme.background, marginTop: "85%" }}>
-            <Text style={{color: theme.primaryText, marginLeft: 'auto', marginRight: 'auto'}}>No data to graph</Text>
-        </View>
-      );
- }
- else{
- 
-    return (
-        <View style={{ flex: 1, backgroundColor: theme.background, marginTop: "70%"}}>
+        <View style={{ flex: 1, backgroundColor: theme.background}}>
             <Text style={{color: theme.primaryText, marginLeft: 'auto', marginRight: 'auto', fontSize: 20}}>Your Progress Over Time</Text>
             <Divider  style={{width:"80%",marginTop:2, marginBottom: 5, marginLeft: 'auto', marginRight: 'auto'}} color='deepskyblue' width={2} inset={false} insetType="middle" />
           <LineChart
