@@ -19,7 +19,6 @@ GoogleSignin.configure({
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const { darkMode, toggleDarkMode, theme, fetchUserData, saveDataToFirestore, userData } = useContext(DarkModeContext);
 
   return (
 
@@ -35,7 +34,7 @@ export default function App() {
                <Stack.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} />
                <Stack.Screen options={{ headerShown: false }} name="Welcome" component={WelcomeScreen} />
 
-               <Stack.Screen options={{ headerShown: true, headerTitle: 'Weight Entries', headerStyle:{backgroundColor: 'deepskyblue'}, headerTintColor: 'white' }}  name="WeightEntriesScreen" component={WeightEntriesScreen} />
+               <Stack.Screen options={{ headerShown: false, headerTitle: 'Weight Entries', headerStyle:{backgroundColor: 'deepskyblue'}, headerTintColor: 'white' }}  name="WeightEntriesScreen" component={WeightEntriesScreen} />
           </Stack.Navigator>
           </DarkModeProvider>
         </NavigationContainer>

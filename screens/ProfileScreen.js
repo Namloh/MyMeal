@@ -9,7 +9,7 @@ import WeightChart from '../Components/WeightChart';
 import { useNavigation } from '@react-navigation/native'
 import { Dialog, Button, Icon  } from '@rneui/themed';
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ route }) => {
   const { darkMode, toggleDarkMode, theme, fetchUserData, saveDataToFirestore, userData } = useContext(DarkModeContext);
   const [editingData, setEditingData] = useState({
     field: '',
@@ -17,7 +17,7 @@ const ProfileScreen = () => {
   }); 
   const [weightEntries, setWeightEntries] = useState([]);
   const navigation = useNavigation()
-
+ 
   const [visibleWeight, setVisibleWeight] = useState(false); 
   const [refreshLoad, setRefreshLoad] = useState(false); 
  
@@ -63,11 +63,19 @@ const ProfileScreen = () => {
   useEffect(() => {
     fetchWeightEntries();
   }, []);
+
   useFocusEffect(React.useCallback(() => {
-    //fetchUserData();
     resetEditingData();
-    //fetchWeightEntries();
   }, []));
+
+  useFocusEffect(React.useCallback(() => {
+    resetEditingData();
+    
+    if (route.params?.weightEntries !== undefined) {
+      setWeightEntries(route.params?.weightEntries);
+    }
+    navigation.setParams({weightEntries: undefined})
+  }, [route.params?.weightEntries]));
 
   const openEditor = (field, value) => {
     setEditingData({ field, value });
@@ -82,14 +90,15 @@ const ProfileScreen = () => {
       else{
         await saveDataToFirestore(editingData.field, editingData.value);
       }
-      if(editingData.field === 'weight'){
+      if(editingData.field === 'weight'){ 
         const userId = auth().currentUser.uid;
         await addWeightEntry(userId, editingData.value)
         refreshData() 
+       
       }
      
       setEditingData({ field: '', value: '' });
-      await fetchUserData();
+      fetchUserData();
       setVisibleWeight(false) 
     } catch (error) {
       console.error('Error saving data:', error);
@@ -145,7 +154,7 @@ const ProfileScreen = () => {
         onPress={() => openEditor('name', userData?.name || '')}
         style={styles.editButton}
       >
-        <Text style={[styles.editButtonText, { color: theme.btnText }]}>Edit</Text>
+        <Text style={[styles.editButtonText, { color: theme.primaryText }]}>Edit</Text>
       </TouchableOpacity>
     </View>
 
@@ -160,7 +169,7 @@ const ProfileScreen = () => {
           
     overlayStyle={{backgroundColor: theme.background, borderColor: theme.primaryText, borderWidth: 2}}
     >
-      <Dialog.Title titleStyle={{color: theme.primaryText}} title="Select Preference"/>
+      <Dialog.Title titleStyle={{color: theme.primaryText}} title={editingData.field === 'weight' ? "Set your current weight" : 'Set your new name'}/>
       <TextInput
               style={[styles.input, {borderColor: theme.primaryText, maxWidth: '100%'}]}
               placeholder={`Enter weight`}
@@ -202,7 +211,7 @@ const ProfileScreen = () => {
               onPress={userData?.weightSystem === 'Imperial' ?  () => openEditor('weight', (userData?.weight*2.205).toFixed(2) || '') : () => openEditor('weight', userData?.weight || '')}
               style={styles.editButton}
             >
-              <Text style={[styles.editButtonText, { color: theme.btnText }]}>Edit</Text>
+              <Text style={[styles.editButtonText, { color: theme.primaryText }]}>Edit</Text>
             </TouchableOpacity>
           </View>
 
@@ -222,7 +231,7 @@ const ProfileScreen = () => {
         onPress={() => {
           refreshData()
         }}
-        iconStyle={{color: theme.background}}
+        iconStyle={{color: theme.primaryText}}
         disabled={refreshLoad}
         reverse={true}
         containerStyle={{
@@ -239,7 +248,7 @@ const ProfileScreen = () => {
               onPress={() => navigation.navigate("WeightEntriesScreen", { weightEntries })}
               style={[styles.editButton, {width: 200, marginLeft: 'auto', marginRight: 'auto', marginBottom: '20%', marginTop: 20}]}
             >
-              <Text style={[styles.editButtonText, { color: theme.btnText }]}>Edit Weight Entries</Text>
+              <Text style={[styles.editButtonText, { color: theme.primaryText }]}>Edit Weight Entries</Text>
             </TouchableOpacity>
         </View>
   </View>

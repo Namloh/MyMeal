@@ -14,7 +14,7 @@ import { ButtonGroup, Switch  } from '@rneui/themed';
 const SettingsScreen = () => {
 
   const { darkMode, toggleDarkMode, theme, fetchUserData, saveDataToFirestore, userData } = useContext(DarkModeContext);
-  const [weightSystem, setWeightSystem] = useState('Metric');
+  const [weightSystem, setWeightSystem] = useState(userData?.weightSystem === 'Metric' ? "Metric" : "Imperial");
   const [selectedIndex, setSelectedIndex] = useState(userData?.weightSystem === 'Metric' ? 0 : 1);  
 
   const navigation = useNavigation()
@@ -73,6 +73,9 @@ const SettingsScreen = () => {
   }
   
   
+  useEffect(() => {
+    fetchUserData()
+  }, []);  
 
   useEffect(() => {
     toggleWeightSystem()
@@ -84,12 +87,13 @@ const SettingsScreen = () => {
           setWeightSystem("Imperial");
         }
         else{
-          setWeightSystem("Metric");
+          setWeightSystem("Metric"); 
         } 
  
       
 
         await saveDataToFirestore('weightSystem', weightSystem);
+   
         fetchUserData();
       } catch (error) {
         console.error('Error toggling weight system:', error);
@@ -98,7 +102,7 @@ const SettingsScreen = () => {
  
   useFocusEffect(
     React.useCallback(() => {
-      fetchUserData()
+      //fetchUserData()
     }, [])
     ); 
     
@@ -139,13 +143,13 @@ const SettingsScreen = () => {
                 onPress={handleSignOut}
                 style={styles.button}
                 >
-                <Text  style={[styles.buttonText, {color: theme.btnText }]}>Sign Out</Text>
+                <Text  style={[styles.buttonText, {color: theme.primaryText }]}>Sign Out</Text>
             </TouchableOpacity>
             <TouchableOpacity
                 onPress={deleteAccount}
                 style={styles.buttonDel}
                 >
-                <Text  style={[styles.buttonText, {color: theme.btnText }]}>Terminate Account</Text>
+                <Text  style={[styles.buttonText, {color: theme.primaryText }]}>Terminate Account</Text>
             </TouchableOpacity>
     </View>
   )

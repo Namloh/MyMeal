@@ -11,8 +11,8 @@ const WeightChart = ({ weightEntries, weightSystem  }) => {
  if(weightEntries.length === 0){
  
     return (
-        <View style={{ flex: 1, backgroundColor: theme.background}}>
-            <Text style={{color: theme.primaryText, marginLeft: 'auto', marginRight: 'auto'}}>No data to graph</Text>
+        <View style={{ flex: 1, backgroundColor: theme.background, marginTop: '30%', height: 100}}>
+            <Text style={{color: theme.primaryText, marginLeft: 'auto', marginRight: 'auto', fontSize: 20}}>No data to graph</Text>
         </View>
       );
  }

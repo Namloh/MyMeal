@@ -5,9 +5,8 @@ import { Calendar } from 'react-native-calendars';
 import { db } from '../firebase'
 import { collection, doc, getDocs, deleteDoc, query, orderBy  } from 'firebase/firestore';
 import auth from '@react-native-firebase/auth';
-
-import { Button } from '@rneui/themed';
-
+import { Button, Icon } from '@rneui/themed';
+import { useNavigation } from '@react-navigation/native'
 
 const WeightEntriesScreen = ({ route }) => {
   const { darkMode, toggleDarkMode, theme, fetchUserData, saveDataToFirestore, userData } = useContext(DarkModeContext);
@@ -24,8 +23,9 @@ const WeightEntriesScreen = ({ route }) => {
 
   const [prevSelectedDay, setPrevSelectedDay] = useState(null); // Keep track of the previously selected day
 
+  const weightSystem = userData?.weightSystem || 'Metric';
 
-
+  const navigation = useNavigation()
 
   const [selectedDay, setSelectedDay] = useState(today);
 
@@ -114,7 +114,8 @@ const handleRemoveEntryFromDatabase = async (entryId) => {
 
     const latestWeightEntry = updatedWeightEntries[updatedWeightEntries.length - 1];
     console.log(latestWeightEntry)
-    saveDataToFirestore('weight', latestWeightEntry.weight)
+    await saveDataToFirestore('weight', latestWeightEntry.weight)
+    fetchUserData()
     setLoadingStatus((prevLoadingStatus) => ({
       ...prevLoadingStatus,
       [entryId]: false,
@@ -172,10 +173,26 @@ const getUserWeightEntries = async (userId) => {
    
   };
 
+  const statusBarHeight = StatusBar.currentHeight || 0;
   const today = new Date().toISOString().split('T')[0];
   const userId = auth().currentUser.uid; // Replace with the actual user ID
   return (
-    <View style={{ minHeight: '100%', backgroundColor: theme.background }}>
+    <View style={{ minHeight: '100%', backgroundColor: theme.background , paddingTop: statusBarHeight }}>
+      <View style={{ flexDirection: 'row', alignItems: 'baseline', marginTop: 20, borderBottomColor: theme.primaryText, borderBottomWidth: 1 }}>
+            <Icon
+            type="material"
+            name="arrow-back"
+            size={20}
+            color={'deepskyblue'}
+            onPress={() => navigation.navigate('Profile', { weightEntries: weightEntries })}
+            iconStyle={{color: theme.primaryText}}
+            reverse={true}
+            containerStyle={{
+             padding: 0
+            }}
+          />
+        <Text style={[styles.header, { color: theme.primaryText }]}>Weight Entries</Text>
+      </View>
     <View style={styles.container}>
       {/* Wrap the Calendar inside a separate View with fixed height */}
       <View style={{ height: 'auto', width: '100%' }}>
@@ -196,7 +213,7 @@ const getUserWeightEntries = async (userId) => {
           renderItem={({ item }) => (
             <View style={{ flex: 1,alignItems: 'center', flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: 'lightgray'}}>
               <TouchableOpacity style={styles.entryItem}>
-                <Text style={[styles.entryWeight, {color: theme.primaryText}]}>{`${item.weight} kg`}</Text>
+                <Text style={[styles.entryWeight, {color: theme.primaryText}]}>{weightSystem === 'Imperial' ? `${(item.weight * 2.205).toFixed(2)} lbs` : `${item.weight} kg`}</Text>
                 <Text style={styles.entryTime}>{item.timestamp.toDate().toLocaleTimeString()}</Text>
               </TouchableOpacity>
               <Button
