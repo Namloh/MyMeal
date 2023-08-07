@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, StatusBar, View, Dimensions, ScrollView } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, StatusBar, View, Dimensions, ScrollView, Alert } from 'react-native'
 import React, {useState, useContext, useEffect} from 'react'
 import { collection, doc, setDoc, getDoc, serverTimestamp, addDoc, query, orderBy, getDocs  } from 'firebase/firestore';
 import auth from '@react-native-firebase/auth';
@@ -44,7 +44,7 @@ const ProfileScreen = ({ route }) => {
     }
   };
 
-  const userId = auth().currentUser.uid;; // Replace with the actual user ID
+  const userId = auth().currentUser.uid; // Replace with the actual user ID
 
   const fetchWeightEntries = async () => {
    
@@ -84,18 +84,35 @@ const ProfileScreen = ({ route }) => {
  
   const saveData = async () => {
     try {
-      if(userData?.weightSystem === 'Imperial' && editingData.field === 'weight'){
-        await saveDataToFirestore(editingData.field, (parseFloat(editingData.value)/2.205).toFixed(2));
+      if(editingData.field === 'weight'){ 
+        const weightValue = parseFloat(editingData.value);
+        if (isNaN(weightValue) || !/^\d+(\.\d+)?$/.test(editingData.value)) {
+          Alert.alert(
+            "Weight value must be a number",
+            "Try again...",
+            [{ text: "OK", onPress: () => {} }],
+            { cancelable: true }
+          );
+          return;
+        } 
+        console.log(userData?.weightSystem)   
+        if(userData?.weightSystem === 'Imperial'){
+          await saveDataToFirestore(editingData.field, (parseFloat(editingData.value)/2.205).toFixed(2));
+          const userId = auth().currentUser.uid;
+          await addWeightEntry(userId, (parseFloat(editingData.value)/2.205).toFixed(2))
+        }
+        else{
+          await saveDataToFirestore(editingData.field, editingData.value);
+          const userId = auth().currentUser.uid;
+          await addWeightEntry(userId, editingData.value)
+        }
+        
+        refreshData() 
       }
       else{
         await saveDataToFirestore(editingData.field, editingData.value);
       }
-      if(editingData.field === 'weight'){ 
-        const userId = auth().currentUser.uid;
-        await addWeightEntry(userId, editingData.value)
-        refreshData() 
-       
-      }
+     
      
       setEditingData({ field: '', value: '' });
       fetchUserData();
@@ -172,7 +189,7 @@ const ProfileScreen = ({ route }) => {
       <Dialog.Title titleStyle={{color: theme.primaryText}} title={editingData.field === 'weight' ? "Set your current weight" : 'Set your new name'}/>
       <TextInput
               style={[styles.input, {borderColor: theme.primaryText, maxWidth: '100%'}]}
-              placeholder={`Enter weight`}
+              placeholder={`Please enter your ${editingData.field === 'weight' ? 'weight' : 'name'}`}
               value={`${editingData.value}`}
               onChangeText={text => setEditingData({ ...editingData, value: text })}
               keyboardType="numeric"

@@ -6,9 +6,8 @@ import { Divider, Text } from '@rneui/themed';
 
 const WeightChart = ({ weightEntries, weightSystem  }) => {
   const { theme } = useContext(DarkModeContext);
-
-
- if(weightEntries.length === 0){
+ // console.log(weightEntries, weightEntries.length)
+ if(weightEntries.length <= 1){
  
     return (
         <View style={{ flex: 1, backgroundColor: theme.background, marginTop: '30%', height: 100}}>
@@ -19,16 +18,17 @@ const WeightChart = ({ weightEntries, weightSystem  }) => {
  else{
   const chartData = {
     labels: weightEntries
-    .filter((entry) => entry.timestamp && entry.timestamp.toDate) // Filter out entries without valid timestamp
+    .filter((entry) => entry.timestamp) // Filter out entries without valid timestamp
     .map((entry) => {
       const date = entry.timestamp.toDate();
       const options = { day: 'numeric', month: 'short' };
-      return date.toLocaleString('en-US', options);
+      return date.toLocaleString('en-US', options); 
     }),
       datasets: [
-        {
-            data: weightEntries.map((entry) =>
+        { 
+            data: weightEntries.map((entry) =>       
             weightSystem === 'Imperial' ? (entry.weight * 2.205).toFixed(2) : entry.weight
+            
           ),
           color: (opacity = 1) => `deepskyblue`, // Customize the line color
           strokeWidth: 3, // Adjust the line thickness
@@ -39,7 +39,7 @@ const WeightChart = ({ weightEntries, weightSystem  }) => {
         <View style={{ flex: 1, backgroundColor: theme.background}}>
             <Text style={{color: theme.primaryText, marginLeft: 'auto', marginRight: 'auto', fontSize: 20}}>Your Progress Over Time</Text>
             <Divider  style={{width:"80%",marginTop:2, marginBottom: 5, marginLeft: 'auto', marginRight: 'auto'}} color='deepskyblue' width={2} inset={false} insetType="middle" />
-          <LineChart
+            <LineChart
             data={chartData}
             width={Dimensions.get('window').width - 5}
             height={220}
@@ -57,7 +57,7 @@ const WeightChart = ({ weightEntries, weightSystem  }) => {
                 stroke: theme.background,
               },
               propsForLabels: {
-                fill: theme.primaryText,
+                fill: theme.primaryText, 
               },
               propsForHorizontalLabels: {
                 fill: theme.primaryText,

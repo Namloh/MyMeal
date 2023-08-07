@@ -177,7 +177,7 @@ const getUserWeightEntries = async (userId) => {
   const today = new Date().toISOString().split('T')[0];
   const userId = auth().currentUser.uid; // Replace with the actual user ID
   return (
-    <View style={{ minHeight: '100%', backgroundColor: theme.background , paddingTop: statusBarHeight }}>
+    <View style={{flex: 1, backgroundColor: theme.background , paddingTop: statusBarHeight }}>
       <View style={{ flexDirection: 'row', alignItems: 'baseline', marginTop: 20, borderBottomColor: theme.primaryText, borderBottomWidth: 1 }}>
             <Icon
             type="material"
@@ -238,7 +238,7 @@ export default WeightEntriesScreen
 
 const styles = StyleSheet.create({
   container: {
-    flex: 0,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

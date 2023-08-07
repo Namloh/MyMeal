@@ -71,7 +71,7 @@ const LoginScreen = () => {
         const timeDifference = differenceInSeconds(creationTime, lastSignInTime);
         //console.log(timeDifference)
         if (timeDifference >= thresholdSeconds) {
-          console.log("User is signing in with Google for the first time!");
+          console.log("User is signing in for the first time!");
           navigation.replace("Welcome");
         } else {
           console.log("Returning user.");
@@ -83,7 +83,7 @@ const LoginScreen = () => {
         setIsLoadingGoogle(false);
         setIsLoadingLogIn(false)
       }
-    });
+    }); 
     return () => {
       // Clean up the listener when the component is unmounted
       unsubscribe();
@@ -115,11 +115,11 @@ const LoginScreen = () => {
       const user = userCredentials.user;
       console.log("Logged in with ", user.email);
 
-     
+    
     })
     .catch((error) => {
       alert(error.message);
-      
+      setIsLoadingLogIn(false)
     });
   
     
