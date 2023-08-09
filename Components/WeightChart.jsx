@@ -68,6 +68,7 @@ const WeightChart = ({ weightEntries, weightSystem  }) => {
              },
             }}
             bezier 
+            
           />
         </View>
       );

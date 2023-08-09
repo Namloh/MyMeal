@@ -97,7 +97,10 @@ const LoginScreen = () => {
     navigation.navigate("Register");
   };
 
-  
+  const handleForgotPassword = () => {
+    navigation.navigate('ResetPassword');
+  };
+
   const handleLogIn = () => {
     if(email == "" || password == ""){
       Alert.alert(
@@ -180,8 +183,10 @@ const LoginScreen = () => {
               raised={true}
             
             />
-        
+         <Text style={[styles.newAccText, {borderBottomColor: 'deepskyblue', borderBottomWidth: 1, marginTop: 10}]} onPress={handleForgotPassword}>Forgot password?</Text>
+
         <Text style={styles.newAccText}>Don't have an account?</Text>
+       
         <Button
               title="Register"
               buttonStyle={{

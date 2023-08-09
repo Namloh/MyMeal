@@ -12,6 +12,7 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import WeightEntriesScreen from './screens/WeightEntriesScreen';
 import { DarkModeContext } from './DarkModeProvider/DarkModeProvider';
+import ResetPasswordScreen from './screens/PasswordResetScreen';
 
 GoogleSignin.configure({
   webClientId: '958515273725-l6pk32nvagpp8gvdhnolq8sc0su40qt4.apps.googleusercontent.com',
@@ -29,7 +30,7 @@ export default function App() {
 
                 <Stack.Screen options={{ headerShown: false }} name="Login" component={LoginScreen} />
                 <Stack.Screen options={{ headerShown: false }} name="Register" component={RegisterScreen} />
-
+                <Stack.Screen options={{ headerShown: false }} name="ResetPassword" component={ResetPasswordScreen} />
 
                <Stack.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} />
                <Stack.Screen options={{ headerShown: false }} name="Welcome" component={WelcomeScreen} />

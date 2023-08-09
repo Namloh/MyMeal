@@ -263,7 +263,7 @@ const ProfileScreen = ({ route }) => {
             
             <TouchableOpacity
               onPress={() => navigation.navigate("WeightEntriesScreen", { weightEntries })}
-              style={[styles.editButton, {width: 200, marginLeft: 'auto', marginRight: 'auto', marginBottom: '20%', marginTop: 20}]}
+              style={[styles.editButton, {width: 200, marginLeft: 'auto', marginRight: 'auto', marginBottom: '20%', marginTop: 0}]}
             >
               <Text style={[styles.editButtonText, { color: theme.primaryText }]}>Edit Weight Entries</Text>
             </TouchableOpacity>
