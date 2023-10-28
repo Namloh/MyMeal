@@ -62,15 +62,14 @@ const LoginScreen = () => {
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged((user) => {
       if (user) {
-        const creationTime = new Date(user.metadata.creationTime);
+        //const creationTime = new Date(user.metadata.creationTime);
         const lastSignInTime = new Date(user.metadata.lastSignInTime);
         //console.log(creationTime)
-        //console.log(lastSignInTime)
-        const thresholdSeconds = -5; // Set the threshold in seconds
-    
-        const timeDifference = differenceInSeconds(creationTime, lastSignInTime);
-        //console.log(timeDifference)
-        if (timeDifference >= thresholdSeconds) {
+        console.log(lastSignInTime)
+        console.log(Date.now());
+        const timeDifference = differenceInSeconds(Date.now(), lastSignInTime);
+        console.log(timeDifference)
+        if (timeDifference <= -6) {
           console.log("User is signing in for the first time!");
           navigation.replace("Welcome");
         } else {

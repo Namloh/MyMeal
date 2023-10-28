@@ -6,7 +6,7 @@ import { Divider, Text } from '@rneui/themed';
 
 const WeightChart = ({ weightEntries, weightSystem  }) => {
   const { theme } = useContext(DarkModeContext);
- // console.log(weightEntries, weightEntries.length)
+ //console.log(weightEntries, weightEntries.length)
  if(weightEntries.length <= 1){
  
     return (

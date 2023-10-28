@@ -57,7 +57,10 @@ const RegisterScreen = () => {
           console.log("Registered in with ", user.email)
           
         })
-      .catch(error => alert(error.message))
+        .catch((error) => {
+          alert(error.message);
+          setIsLoadingRegister(false); // Set loading to false on error
+        });
     }
   
  

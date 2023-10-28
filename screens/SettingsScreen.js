@@ -71,11 +71,7 @@ const SettingsScreen = () => {
     );
 
   }
-  
-  
-  useEffect(() => {
-    fetchUserData()
-  }, []);  
+   
 
   useEffect(() => {
     toggleWeightSystem()
@@ -89,8 +85,6 @@ const SettingsScreen = () => {
         else{
           setWeightSystem("Metric"); 
         } 
- 
-      
 
         await saveDataToFirestore('weightSystem', weightSystem);
    

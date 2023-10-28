@@ -178,8 +178,7 @@ const ProfileScreen = ({ route }) => {
 </View>
 
 <View style={styles.itemContainer}>
-    
-          
+  
       <Dialog
       isVisible={visibleWeight}
       onBackdropPress={() => {setVisibleWeight(false)}}
@@ -192,8 +191,9 @@ const ProfileScreen = ({ route }) => {
               placeholder={`Please enter your ${editingData.field === 'weight' ? 'weight' : 'name'}`}
               value={`${editingData.value}`}
               onChangeText={text => setEditingData({ ...editingData, value: text })}
-              keyboardType="numeric"
+              keyboardType={editingData.field === 'weight' ? 'numeric' : 'default'}
             />
+                  
 
       <Dialog.Actions>
         <Dialog.Button

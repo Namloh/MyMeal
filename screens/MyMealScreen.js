@@ -3,16 +3,15 @@ import React, { useContext, useEffect } from 'react';
 import { DarkModeContext } from '../DarkModeProvider/DarkModeProvider';
 
 const MyMealScreen = () => {
-  const { theme, fetchUserData } = useContext(DarkModeContext);
+  const { theme, fetchUserData, toggleDarkMode } = useContext(DarkModeContext);
   const statusBarHeight = StatusBar.currentHeight || 0;
 
-
-   
   useEffect(() => {
-    fetchUserData()
+   
   }, []);  
 
   return (
+
     <View style={{ minHeight: '100%', backgroundColor: theme.background , paddingTop: statusBarHeight}}>
        
        <Text style={[styles.header, {color: theme.primaryText}]}>My Meal</Text>
