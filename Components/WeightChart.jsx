@@ -63,8 +63,9 @@ const WeightChart = ({ weightEntries, weightSystem  }) => {
                 fill: theme.primaryText,
               },
               propsForVerticalLabels: { 
-                rotation: -90,
+                rotation: -45,
                 fill: theme.primaryText,
+                
              },
             }}
             bezier 

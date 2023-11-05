@@ -114,8 +114,7 @@ const handleRemoveEntryFromDatabase = async (entryId) => {
 
     const latestWeightEntry = updatedWeightEntries[updatedWeightEntries.length - 1];
     console.log(latestWeightEntry)
-    await saveDataToFirestore('weight', latestWeightEntry.weight)
-    fetchUserData()
+    saveDataToFirestore('weight', latestWeightEntry.weight)
     setLoadingStatus((prevLoadingStatus) => ({
       ...prevLoadingStatus,
       [entryId]: false,

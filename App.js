@@ -29,20 +29,20 @@ export default function App() {
         <NativeBaseProvider >
             <NavigationContainer >
             <DarkModeProvider>
-          <Stack.Navigator>
+            <Stack.Navigator>
 
-                <Stack.Screen options={{ headerShown: false }} name="Login" component={LoginScreen} />
-                <Stack.Screen options={{ headerShown: false }} name="Register" component={RegisterScreen} />
-                <Stack.Screen options={{ headerShown: false }} name="ResetPassword" component={ResetPasswordScreen} />
+                  <Stack.Screen options={{ headerShown: false }} name="Login" component={LoginScreen} />
+                  <Stack.Screen options={{ headerShown: false }} name="Register" component={RegisterScreen} />
+                  <Stack.Screen options={{ headerShown: false }} name="ResetPassword" component={ResetPasswordScreen} />
 
-                <Stack.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} />
-                <Stack.Screen options={{ headerShown: false }} name="Welcome" component={WelcomeScreen} />
-                <Stack.Screen options={{ headerShown: false }} name="WeightInputScreen" component={WeightInputScreen}/>
-                <Stack.Screen options={{ headerShown: false }} name="HeightInputScreen" component={HeightInputScreen}/>
-                <Stack.Screen options={{ headerShown: false }} name="ActivityInputScreen" component={ActivityInputScreen}/>
+                  <Stack.Screen options={{ headerShown: false }} name="Home" component={HomeScreen} />
+                  <Stack.Screen options={{ headerShown: false }} name="Welcome" component={WelcomeScreen} />
+                  <Stack.Screen options={{ headerShown: false }} name="WeightInputScreen" component={WeightInputScreen}/>
+                  <Stack.Screen options={{ headerShown: false }} name="HeightInputScreen" component={HeightInputScreen}/>
+                  <Stack.Screen options={{ headerShown: false }} name="ActivityInputScreen" component={ActivityInputScreen}/>
 
-               <Stack.Screen options={{ headerShown: false, headerTitle: 'Weight Entries', headerStyle:{backgroundColor: 'deepskyblue'}, headerTintColor: 'white' }}  name="WeightEntriesScreen" component={WeightEntriesScreen} />
-          </Stack.Navigator>
+                  <Stack.Screen options={{ headerShown: false, headerTitle: 'Weight Entries', headerStyle:{backgroundColor: 'deepskyblue'}, headerTintColor: 'white' }}  name="WeightEntriesScreen" component={WeightEntriesScreen} />
+            </Stack.Navigator>
           </DarkModeProvider>
         </NavigationContainer>
       </NativeBaseProvider>

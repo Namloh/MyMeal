@@ -69,7 +69,7 @@ const LoginScreen = () => {
         console.log(Date.now());
         const timeDifference = differenceInSeconds(Date.now(), lastSignInTime);
         console.log(timeDifference)
-        if (timeDifference <= -6) {
+        if (timeDifference <= -30) {
           console.log("User is signing in for the first time!");
           navigation.replace("Welcome");
         } else {

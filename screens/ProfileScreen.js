@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native'
 import { Dialog, Button, Icon  } from '@rneui/themed';
 
 const ProfileScreen = ({ route }) => {
-  const { darkMode, toggleDarkMode, theme, fetchUserData, saveDataToFirestore, userData } = useContext(DarkModeContext);
+  const { darkMode, toggleDarkMode, theme, saveDataToFirestore, userData } = useContext(DarkModeContext);
   const [editingData, setEditingData] = useState({
     field: '',
     value: '',
@@ -57,7 +57,6 @@ const ProfileScreen = ({ route }) => {
   const refreshData = async () => { 
     setRefreshLoad(true)
     fetchWeightEntries()
-    fetchUserData()
   };
 
   useEffect(() => {
@@ -115,7 +114,6 @@ const ProfileScreen = ({ route }) => {
      
      
       setEditingData({ field: '', value: '' });
-      fetchUserData();
       setVisibleWeight(false) 
     } catch (error) {
       console.error('Error saving data:', error);
@@ -146,9 +144,6 @@ const ProfileScreen = ({ route }) => {
     <Text style={[styles.header, { color: theme.primaryText }]}>My Profile</Text>
 
     <View style={styles.container}>
-
-   
-      
       <View style={styles.itemContainer}>
 
      {/*
@@ -355,7 +350,5 @@ const styles = StyleSheet.create({
         fontSize: 30,
         marginLeft: 10,
         marginTop: 10,
-      },
-
-      
+      }, 
 })

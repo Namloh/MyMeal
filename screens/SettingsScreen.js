@@ -13,7 +13,7 @@ import { ButtonGroup, Switch  } from '@rneui/themed';
 
 const SettingsScreen = () => {
 
-  const { darkMode, toggleDarkMode, theme, fetchUserData, saveDataToFirestore, userData } = useContext(DarkModeContext);
+  const { darkMode, toggleDarkMode, theme, saveDataToFirestore, userData } = useContext(DarkModeContext);
   const [weightSystem, setWeightSystem] = useState(userData?.weightSystem === 'Metric' ? "Metric" : "Imperial");
   const [selectedIndex, setSelectedIndex] = useState(userData?.weightSystem === 'Metric' ? 0 : 1);  
 
@@ -86,20 +86,13 @@ const SettingsScreen = () => {
           setWeightSystem("Metric"); 
         } 
 
-        await saveDataToFirestore('weightSystem', weightSystem);
-   
-        fetchUserData();
+        saveDataToFirestore('weightSystem', weightSystem);
       } catch (error) {
         console.error('Error toggling weight system:', error);
       }  
   }; 
- 
-  useFocusEffect(
-    React.useCallback(() => {
-      //fetchUserData()
-    }, [])
-    ); 
-    
+   
+
   return (
     <View style={[styles.wrap, {backgroundColor: theme.background, paddingTop: statusBarHeight}]}>
      <Text style={[styles.header, {color: theme.primaryText }]}>My Account</Text>
@@ -107,7 +100,7 @@ const SettingsScreen = () => {
         <View style={styles.container}>
         
             <Text style={[styles.emailText, {color: theme.primaryText }]}>Name: {userData?.name}</Text>
-            <Text style={[styles.emailText, {color: theme.primaryText }]}>Weight: {userData?.weightSystem === 'Imperial' ? `${(userData?.weight * 2.205).toFixed(2)} lbs` : `${userData?.weight} Kg`}</Text>
+            <Text style={[styles.emailText, {color: theme.primaryText }]}>Weight: {weightSystem === 'Metric' ? `${(userData?.weight * 2.205).toFixed(2)} lbs` : `${userData?.weight} Kg`}</Text>
             <Text style={[styles.emailText, {color: theme.primaryText }]}>Email: {auth().currentUser?.email}</Text>
      
          
