@@ -10,7 +10,7 @@ MyMeal je aplikace pro plánování jídel, která vám pomáhá organizovat va�
     <img src="./Screenshots/RegisterScreen.png" alt="Register Screen" width="200" />
 </div>
 
-### Your Meal Screen (with generated meals) & Meal Detail Screen
+### My Meals Screen (with generated meals) & Meal Detail Screen
 <div style="display: flex; flex-direction: row; flex-wrap: wrap;">
     <img src="./Screenshots/GeneratedMyMealScreen.png" alt="Your Meal Screen (with generated meals)" width="200" />
     <img src="./Screenshots/MealDetailScreen.png" alt="Meal Detail Screen" width="200" />
