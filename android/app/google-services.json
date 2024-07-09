@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "958515273725",
+    "project_id": "mymeal-d50b5",
+    "storage_bucket": "mymeal-d50b5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:958515273725:android:c01dac36f1f7505ea98394",
+        "android_client_info": {
+          "package_name": "com.anonymous.MyMeal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "958515273725-5tv03r0igksdreptman2dsr3j8kau5ir.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.anonymous.MyMeal",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "958515273725-l6pk32nvagpp8gvdhnolq8sc0su40qt4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": ""
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "958515273725-l6pk32nvagpp8gvdhnolq8sc0su40qt4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
