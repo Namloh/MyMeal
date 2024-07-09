@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "MyMeal",
+    "slug": "MyMeal",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/MyMeal_logo.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true, 
+      "googleServicesFile": "./GoogleService-Info.plist"
+    },
+    "android": {
+      "googleServicesFile": "./google-services.json",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/MyMeal_logo.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.anonymous.MyMeal"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "@react-native-google-signin/google-signin"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "5c73178a-99d8-41d7-85dd-9e1b5f6b2a40"
+      }
+    }
+  }
+}
